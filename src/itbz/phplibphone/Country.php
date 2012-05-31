@@ -81,8 +81,8 @@ class Country
     public function fetchByAlpha2($code, $lang = 'EN')
     {
         assert('is_string($code)');
-		if ( !ctype_alpha($code) ) return '';
-		$code = strtoupper($code);
+        if ( !ctype_alpha($code) ) return '';
+        $code = strtoupper($code);
         return $this->fetchBy('country_code', $code, $lang);
     }
 
