@@ -1,15 +1,22 @@
 <?php
 /**
+ * This file is part of the DataMapper package
+ *
  * Copyright (c) 2012 Hannes Forsgård
- * Licensed under the WTFPL (http://sam.zoy.org/wtfpl/)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
+ *
  * @package phplibphone
  */
 namespace itbz\phplibphone;
 
 
 /**
- * Models international phone numbers from a Swedish context
+ * Parse phone numbers
+ *
  * @package phplibphone
  */
 class PhoneNumber
@@ -17,104 +24,127 @@ class PhoneNumber
 
 	/**
 	 * Area code prefix
-	 * @const string TRUNK_PREFIX
 	 */
 	const TRUNK_PREFIX = '0';
 
 
 	/**
 	 * Country code prefix
-	 * @const string INTERNATIONAL_PREFIX
 	 */
-	const INTERNATIONAL_PREFIX = '+';
+	const CC_PREFIX = '+';
 
 
 	/**
-	 * Parsing state country code
-	 * @const int PARSING_CC
+	 * Contry code parsing state
 	 */
-	const PARSING_CC = 1;
+	const STATE_CC = 1;
 
 
 	/**
-	 * Parsing state national destination code
-	 * @const int PARSING_NDC
+	 * Nation destination code parsing state
 	 */
-	const PARSING_NDC = 2;
+	const STATE_NDC = 2;
 
 
 	/**
-	 * Parsing state subscriber number
-	 * @const int PARSING_SN
+	 * Subscriber number parsing state
 	 */
-	const PARSING_SN = 0;
+	const STATE_SN = 0;
 
 
     /**
-     * Object for fetching countries
-     * @var Country $countries
+     * Country code lookup library
+     *
+     * @var LookupInterface
      */
-    private $countries;
+    private $_countryLib;
 
 
     /**
-     * Object for fetching areas
-     * @var PhoneArea $areas
+     * Array of area code lookup libraries
+     *
+     * @var array
      */
-    private $areas;
+    private $_areaLibs = array();
 
 
     /**
-     * Object for fetching carriers
-     * @var PhoneCarrier $carriers
+     * Array of carrier lookup libraries
+     *
+     * @var array
      */
-    private $carriers;
+    private $_carrierLibs = array();
 
 
 	/**
 	 * Raw number input
-	 * @var string $raw
+	 *
+	 * @var string
 	 */
-	private $raw = '';
+	private $_raw = '';
 
 
     /**
      * Country code
-     * @var string $cc
+     *
+     * @var string
      */
-    private $cc = '';
+    private $_cc = '';
 
     
     /**
      * National destination code
-     * @var string $ndc
+     *
+     * @var string
      */
-    private $ndc = '';
+    private $_ndc = '';
     
 
     /**
      * Subscriber number
-     * @var string $sn
+     *
+     * @var string
      */
-    private $sn = '';
+    private $_sn = '';
 
 
     /**
-     * Set dependencies
-     * @param Country $countries
-     * @param PhoneArea $areas
-     * @param PhoneCarrier $carriers
+     * Country code lookup library is required
+     *
+     * @param LookupInterface $countryLib
      */
-    public function __construct(
-        Country $countries,
-        PhoneArea $areas,
-        PhoneCarrier $carriers
-    )
+    public function __construct(LookupInterface $countryLib)
     {
-        $this->countries = $countries;
-        $this->areas = $areas;
-        $this->carriers = $carriers;
+        $this->_countryLib = $countryLib;
+        #PhoneArea $areas,
+        #PhoneCarrier $carriers
+        #$this->_areaLibs = $areas;
+        #$this->_carrierLibs = $carriers;
     }
+
+    // såhär...
+    public function registerAreaLib($countryCode, LookupInterface $areaLib)
+    {
+        assert('is_scalar($countryCode)');
+        $this->_areaLibs[$countryCode] = $areaLib;
+    }
+
+
+    /*
+        låt Lookup vara ett enkelt interface för att hämta info om nummer
+            eller subnummer
+        
+        skapa ett underpaket som heter Library
+        
+        skapa de olika klasserna med data där
+        
+        ladda area code libs efter landskod i en egen funktion
+        
+        ladda carrier libs efter landskod i en egen funktion
+
+        sedan är det bara att köra på som innan
+            men byt namn på metode och liknande...
+    */
 
 
     /**
@@ -123,10 +153,10 @@ class PhoneNumber
      */
     public function reset()
     {
-        $this->raw = '';
-        $this->cc = '';
-        $this->ndc = '';
-        $this->sn = '';
+        $this->_raw = '';
+        $this->_cc = '';
+        $this->_ndc = '';
+        $this->_sn = '';
     }
 
 
@@ -142,8 +172,8 @@ class PhoneNumber
 		assert('is_string($nr)');
 		assert('is_numeric($cc)');
 		$this->reset();
-		$this->cc = $cc;
-		$this->raw = $nr;
+		$this->_cc = $cc;
+		$this->_raw = $nr;
 
 		$len = strlen($nr);
 		if ( $len == 0 ) {
@@ -153,17 +183,17 @@ class PhoneNumber
 
 		// Set parsing state
 		switch ( $nr[0] ) {
-			case self::INTERNATIONAL_PREFIX:
-				$state = self::PARSING_CC;
+			case self::CC_PREFIX:
+				$state = self::STATE_CC;
 				$i = 1;
 				break;
 			case self::TRUNK_PREFIX:
-				$state = self::PARSING_NDC;
+				$state = self::STATE_NDC;
 				$i = 1;
 				break;
 			default:
 				$i = 0;
-				$state = self::PARSING_SN;
+				$state = self::STATE_SN;
 		}
 		
 		// Active parsing part
@@ -173,33 +203,33 @@ class PhoneNumber
 		for (; $i<$len; $i++ ) {
 			if ( ctype_digit($nr[$i]) ) $part .= $nr[$i];
 			
-			if ( $state == self::PARSING_CC ) {
+			if ( $state == self::STATE_CC ) {
     			// Check if $part is a valid country code
-				if ( is_numeric($part) && $this->countries->fetchByCC($part) != '' ) {
-					$this->cc = $part;
+				if ( is_numeric($part) && $this->_countryLib->fetchByCC($part) != '' ) {
+					$this->_cc = $part;
 					$part = '';
-					$state = self::PARSING_NDC;
+					$state = self::STATE_NDC;
 				} elseif ( strlen($part) >= 5 ) {
     				// Max 5 chars in country codes
-					$state = self::PARSING_NDC;
+					$state = self::STATE_NDC;
 				}
 			}
 
-			if ( $state == self::PARSING_NDC ) {
+			if ( $state == self::STATE_NDC ) {
     			// Check if $part is a valid national destination code
-				if ( is_numeric($part) && $this->areas->fetchArea($this->cc, $part)!='' ) {
-					$this->ndc = $part;
+				if ( is_numeric($part) && $this->_areaLibs->fetchArea($this->_cc, $part)!='' ) {
+					$this->_ndc = $part;
 					$part = '';
-					$state = self::PARSING_SN;
+					$state = self::STATE_SN;
 				} elseif ( strlen($part) >= 3 ) {
     				// Max 3 chars in national destination codes
-					$state = self::PARSING_SN;
+					$state = self::STATE_SN;
 				}
 			}
 		} // </for>
 		
 		// The rest is subscriber number
-		$this->sn = $part;
+		$this->_sn = $part;
     }
 
 
@@ -209,7 +239,7 @@ class PhoneNumber
 	 */
 	public function getRaw()
 	{
-		return $this->raw;
+		return $this->_raw;
 	}
 
 
@@ -221,7 +251,7 @@ class PhoneNumber
     public function setCc($cc)
     {
         assert('is_numeric($cc) || $cc==""');
-        $this->cc = $cc;
+        $this->_cc = $cc;
     }
 
 
@@ -233,7 +263,7 @@ class PhoneNumber
     public function setNdc($ndc)
     {
         assert('is_numeric($ndc) || $ndc==""');
-        $this->ndc = $ndc;
+        $this->_ndc = $ndc;
     }
 
 
@@ -245,7 +275,7 @@ class PhoneNumber
     public function setSn($sn)
     {
         assert('is_numeric($sn) || $sn==""');
-        $this->sn = $sn;
+        $this->_sn = $sn;
     }
 
 
@@ -255,7 +285,7 @@ class PhoneNumber
      */
     public function getCc()
     {
-        return $this->cc;
+        return $this->_cc;
     }
 
 
@@ -265,7 +295,7 @@ class PhoneNumber
      */
     public function getNdc()
     {
-        return $this->ndc;
+        return $this->_ndc;
     }
 
 
@@ -275,7 +305,7 @@ class PhoneNumber
      */
     public function getSn()
     {
-        return $this->sn;
+        return $this->_sn;
     }
 
 
@@ -285,7 +315,7 @@ class PhoneNumber
 	 */
 	public function getAreaCode()
 	{
-		return empty($this->ndc) ? '' : self::TRUNK_PREFIX.$this->ndc;
+		return empty($this->_ndc) ? '' : self::TRUNK_PREFIX.$this->_ndc;
 	}
 
 
@@ -295,7 +325,7 @@ class PhoneNumber
 	 */
 	public function getE164()
 	{
-		$num = $this->cc . $this->ndc . $this->sn;
+		$num = $this->_cc . $this->_ndc . $this->_sn;
 		if ( !empty($num) ) $num = "+$num";
 		return $num;
 	}
@@ -307,9 +337,9 @@ class PhoneNumber
 	 */
 	public function getInternationalFormat()
 	{
-        if ( empty($this->cc) ) return '';
-		$ndc = empty($this->ndc) ? '' : $this->ndc . ' ';
-		return self::INTERNATIONAL_PREFIX . $this->cc . ' ' . $ndc . self::group($this->sn);
+        if ( empty($this->_cc) ) return '';
+		$ndc = empty($this->_ndc) ? '' : $this->_ndc . ' ';
+		return self::CC_PREFIX . $this->_cc . ' ' . $ndc . self::group($this->_sn);
 	}
 
 
@@ -322,7 +352,7 @@ class PhoneNumber
 	{
 		$areaCode = $this->getAreaCode();
 		if ( !empty($areaCode) ) $areaCode .= '-'; 
-		return $areaCode . self::group($this->sn);
+		return $areaCode . self::group($this->_sn);
 	}
 
 
@@ -333,7 +363,7 @@ class PhoneNumber
      */
     public function format($cc = '46')
     {
-		return ( $this->cc == $cc ) ? $this->getNationalFormat() : $this->getInternationalFormat();
+		return ( $this->_cc == $cc ) ? $this->getNationalFormat() : $this->getInternationalFormat();
     }
 
 
@@ -356,7 +386,7 @@ class PhoneNumber
      */
     public function getCountry($lang = 'en')
     {
-        return $this->countries->fetchByCC($this->cc, $lang);
+        return $this->_countryLib->fetchByCC($this->_cc, $lang);
     }
 
 
@@ -366,7 +396,7 @@ class PhoneNumber
      */
     public function getCarrier()
     {
-        return $this->carriers->fetchCarrier($this->cc, $this->ndc, $this->sn);
+        return $this->_carrierLibs->fetchCarrier($this->_cc, $this->_ndc, $this->_sn);
     }
 
 
@@ -376,7 +406,7 @@ class PhoneNumber
 	 */
 	public function getArea()
 	{
-		return $this->areas->fetchArea($this->cc, $this->ndc);
+		return $this->_areaLibs->fetchArea($this->_cc, $this->_ndc);
 	}
 
 
