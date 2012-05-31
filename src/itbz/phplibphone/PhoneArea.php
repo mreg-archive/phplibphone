@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the DataMapper package
+ * This file is part of the phplibphone package
  *
  * Copyright (c) 2012 Hannes Forsgård
  *
