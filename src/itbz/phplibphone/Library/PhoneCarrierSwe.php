@@ -11,7 +11,7 @@
  *
  * @package phplibphone
  */
-namespace itbz\phplibphone\Swe;
+namespace itbz\phplibphone\Library;
 use itbz\phplibphone\PhoneCarrier as PhoneCarrierBase;
 use itbz\STB\Exception;
 use SimpleXMLElement;
@@ -21,7 +21,7 @@ use SimpleXMLElement;
  * Fetch carrier information for swedish phone number from api.pts.se
  * @package phplibphone
  */
-class PhoneCarrier extends PhoneCarrierBase
+class PhoneCarrier extends PhoneCarrierBase implements \itbz\phplibphone\LookupInterface
 {
 
     /**

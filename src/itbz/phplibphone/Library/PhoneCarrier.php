@@ -11,14 +11,14 @@
  *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
+namespace itbz\phplibphone\Library;
 
 
 /**
  * Phone carrier base class. Does nothing.
  * @package phplibphone
  */
-class PhoneCarrier
+class PhoneCarrier implements \itbz\phplibphone\LookupInterface
 {
 
     /**

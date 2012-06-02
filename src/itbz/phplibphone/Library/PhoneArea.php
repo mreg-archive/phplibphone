@@ -11,14 +11,14 @@
  *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
+namespace itbz\phplibphone\Library;
 
 
 /**
  * Lookup national destination codes
  * @package phplibphone
  */
-class PhoneArea
+class PhoneArea implements \itbz\phplibphone\LookupInterface
 {
 
     /**

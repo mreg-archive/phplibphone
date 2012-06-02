@@ -11,7 +11,7 @@
  *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
+namespace itbz\phplibphone\Library;
 use PDO;
 use itbz\Cache\CacheInterface;
 
@@ -20,7 +20,7 @@ use itbz\Cache\CacheInterface;
  * Lookup country codes from db
  * @package phplibphone
  */
-class Country
+class Country implements \itbz\phplibphone\LookupInterface
 {
 
     /**

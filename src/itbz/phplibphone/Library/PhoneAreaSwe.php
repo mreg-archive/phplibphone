@@ -11,7 +11,7 @@
  *
  * @package phplibphone
  */
-namespace itbz\phplibphone\Swe;
+namespace itbz\phplibphone\Library;
 use itbz\phplibphone\PhoneArea as PhoneAreaBase;
 
 
@@ -19,7 +19,7 @@ use itbz\phplibphone\PhoneArea as PhoneAreaBase;
  * Lookup sweidsh national destination codes
  * @package phplibphone
  */
-class PhoneArea extends PhoneAreaBase
+class PhoneArea extends PhoneAreaBase implements \itbz\phplibphone\LookupInterface
 {
 
     /**
