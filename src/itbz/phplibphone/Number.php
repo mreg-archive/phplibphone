@@ -77,6 +77,14 @@ class Number
 
 
     /**
+     * Default country code
+     *
+     * @var string
+     */
+    private $_defaultCc;
+
+
+    /**
      * Raw number input
      *
      * @var string
@@ -112,17 +120,26 @@ class Number
      * Country code lookup library is required
      *
      * @param LookupInterface $countryLib
+     *
+     * @param string $defaultCc Country code to assume when parsing numbers with
+     * no explicit country code
      */
-    public function __construct(LookupInterface $countryLib)
+    public function __construct(LookupInterface $countryLib, $defaultCc = '')
     {
         $this->_countryLib = $countryLib;
-        #PhoneArea $areas,
-        #PhoneCarrier $carriers
-        #$this->_areaLibs = $areas;
-        #$this->_carrierLibs = $carriers;
+        $this->_defaultCc = (string)$defaultCc;
     }
 
-    // såhär...
+    
+    /**
+     * Register area code lookup library for country code
+     *
+     * @param string $countryCode
+     *
+     * @param LookupInterface $areaLib
+     *
+     * @return void
+     */
     public function registerAreaLib($countryCode, LookupInterface $areaLib)
     {
         assert('is_scalar($countryCode)');
@@ -130,53 +147,53 @@ class Number
     }
 
 
-    /*
-        låt Lookup vara ett enkelt interface för att hämta info om nummer
-            eller subnummer
-        
-        skapa ett underpaket som heter Library
-        
-        skapa de olika klasserna med data där
-        
-        ladda area code libs efter landskod i en egen funktion
-        
-        ladda carrier libs efter landskod i en egen funktion
-
-        sedan är det bara att köra på som innan
-            men byt namn på metode och liknande...
-    */
+    /**
+     * Register carrier code lookup library for country code
+     *
+     * @param string $countryCode
+     *
+     * @param LookupInterface $carrier
+     *
+     * @return void
+     */
+    public function registerCarrierLib($countryCode, LookupInterface $carrier)
+    {
+        assert('is_scalar($countryCode)');
+        $this->_carrierLibs[$countryCode] = $carrier;
+    }
 
 
     /**
      * Reset container
+     *
      * @return void
      */
     public function reset()
     {
         $this->_raw = '';
-        $this->_cc = '';
+        $this->_cc = $this->_defaultCc;
         $this->_ndc = '';
         $this->_sn = '';
     }
 
 
     /**
-     * Set number. Non numerical characters (apart from prefixes) will be
-     * silently ignored.
+     * Set raw number
+     *
+     * Non numerical characters (apart from prefixes) are silently ignored
+     *
      * @param string $nr
-     * @param numeric $cc Default country code
+     *
      * @return void
      */
-    public function setRaw($nr, $cc = '46')
+    public function setRaw($nr)
     {
         assert('is_string($nr)');
-        assert('is_numeric($cc)');
         $this->reset();
-        $this->_cc = $cc;
         $this->_raw = $nr;
 
         $len = strlen($nr);
-        if ( $len == 0 ) {
+        if ($len == 0) {
             $nr = '0';
             $len = 1;
         }    
@@ -185,14 +202,14 @@ class Number
         switch ( $nr[0] ) {
             case self::CC_PREFIX:
                 $state = self::STATE_CC;
-                $i = 1;
+                $step = 1;
                 break;
             case self::TRUNK_PREFIX:
                 $state = self::STATE_NDC;
-                $i = 1;
+                $step = 1;
                 break;
             default:
-                $i = 0;
+                $step = 0;
                 $state = self::STATE_SN;
         }
         
@@ -200,33 +217,37 @@ class Number
         $part = '';
 
         // Step through number
-        for (; $i<$len; $i++ ) {
-            if ( ctype_digit($nr[$i]) ) $part .= $nr[$i];
+        for (; $step < $len; $step++ ) {
+            if (!ctype_digit($nr[$step])) {
+                continue;
+            }
+
+            $part .= $nr[$step];
             
-            if ( $state == self::STATE_CC ) {
+            if ($state == self::STATE_CC) {
                 // Check if $part is a valid country code
-                if ( is_numeric($part) && $this->_countryLib->fetchByCC($part) != '' ) {
+                if ($this->_countryLib->lookup($part) != '') {
                     $this->_cc = $part;
                     $part = '';
                     $state = self::STATE_NDC;
-                } elseif ( strlen($part) >= 5 ) {
+                } elseif (strlen($part) >= 5) {
                     // Max 5 chars in country codes
                     $state = self::STATE_NDC;
                 }
             }
 
-            if ( $state == self::STATE_NDC ) {
+            if ($state == self::STATE_NDC) {
                 // Check if $part is a valid national destination code
-                if ( is_numeric($part) && $this->_areaLibs->fetchArea($this->_cc, $part)!='' ) {
+                if ($this->_areaLibs[$this->_cc]->lookup($part) != '') {
                     $this->_ndc = $part;
                     $part = '';
                     $state = self::STATE_SN;
-                } elseif ( strlen($part) >= 3 ) {
+                } elseif (strlen($part) >= 3) {
                     // Max 3 chars in national destination codes
                     $state = self::STATE_SN;
                 }
             }
-        } // </for>
+        }
         
         // The rest is subscriber number
         $this->_sn = $part;
@@ -234,7 +255,10 @@ class Number
 
 
     /**
-     * Get unformatted number. Only avaliable if number is set using setRaw()
+     * Get unformatted number
+     *
+     * Only avaliable if number is set using setRaw()
+     *
      * @return string
      */
     public function getRaw()
@@ -245,45 +269,52 @@ class Number
 
     /**
      * Set country code
-     * @param numeric $cc
+     *
+     * @param string $cc
+     *
      * @return void
      */
-    public function setCc($cc)
+    public function setCountryCode($cc)
     {
-        assert('is_numeric($cc) || $cc==""');
+        assert('is_string($cc)');
         $this->_cc = $cc;
     }
 
 
     /**
      * Set national destination code
-     * @param numeric $ndc
+     *
+     * @param string $ndc
+     *
      * @return void
      */
-    public function setNdc($ndc)
+    public function setNationalDestinationCode($ndc)
     {
-        assert('is_numeric($ndc) || $ndc==""');
+        assert('is_string($ndc)');
         $this->_ndc = $ndc;
     }
 
 
     /**
      * Set subscriber number
-     * @param numeric $sn
+     *
+     * @param string $sn
+     *
      * @return void
      */
-    public function setSn($sn)
+    public function setSubscriberNumber($sn)
     {
-        assert('is_numeric($sn) || $sn==""');
+        assert('is_string($sn)');
         $this->_sn = $sn;
     }
 
 
     /**
      * Get country code
+     *
      * @return string
      */
-    public function getCc()
+    public function getCountryCode()
     {
         return $this->_cc;
     }
@@ -291,9 +322,10 @@ class Number
 
     /**
      * Get national destination code
+     *
      * @return string
      */
-    public function getNdc()
+    public function getNationalDestinationCode()
     {
         return $this->_ndc;
     }
@@ -301,118 +333,171 @@ class Number
 
     /**
      * Get subscriber number
+     *
      * @return string
      */
-    public function getSn()
+    public function getSubscriberNumber()
     {
         return $this->_sn;
     }
 
 
     /**
-     * Get area code (trunk prefix + national destination code).
+     * Get area code
+     *
      * @return string
      */
     public function getAreaCode()
     {
-        return empty($this->_ndc) ? '' : self::TRUNK_PREFIX.$this->_ndc;
+        return empty($this->_ndc) ? '' : self::TRUNK_PREFIX . $this->_ndc;
     }
 
 
     /**
      * Get number formatted according to E164
+     *
      * @return string
      */
     public function getE164()
     {
         $num = $this->_cc . $this->_ndc . $this->_sn;
-        if ( !empty($num) ) $num = "+$num";
+        if (!empty($num)) {
+            $num = "+$num";
+        }
+
         return $num;
     }
 
 
     /**
      * Get number formatted for internation calls
+     *
      * @return string
      */
     public function getInternationalFormat()
     {
-        if ( empty($this->_cc) ) return '';
-        $ndc = empty($this->_ndc) ? '' : $this->_ndc . ' ';
-        return self::CC_PREFIX . $this->_cc . ' ' . $ndc . self::group($this->_sn);
+        if (empty($this->_cc)) {
+
+            return '';
+        }
+        
+        // TODO här kan det bli två mellanrum i rad om ndc inte är definierat
+        // kan jag leva med det, eller fixa på en gång???
+        
+        return sprintf(
+            '%s%s %s %s',
+            self::CC_PREFIX,
+            $this->_cc,
+            $this->_ndc,
+            self::group($this->_sn)
+        );
     }
 
 
     /**
-     * Get number in national format, with no country code
-     * and a hyphen between ndc and sn
+     * Get number in national format
+     *
+     * No country code and a hyphen between ndc and sn
+     *
      * @return string
      */
     public function getNationalFormat()
     {
         $areaCode = $this->getAreaCode();
-        if ( !empty($areaCode) ) $areaCode .= '-'; 
+        if (!empty($areaCode)) {
+            $areaCode .= '-'; 
+        }
+        
         return $areaCode . self::group($this->_sn);
     }
 
 
     /**
-     * Get phone number in national or internation format depending on country
-     * @param string $cc Calling from country code
+     * Get phone number in national or international format
+     *
+     * If country code equals default country code national format is used. Else
+     * international.
+     *
      * @return string
      */
     public function format($cc = '46')
     {
-        return ( $this->_cc == $cc ) ? $this->getNationalFormat() : $this->getInternationalFormat();
+        if ($this->_cc == $this->_defaultCc) {
+
+            return $this->getInternationalFormat();
+        }
+
+        return $this->getNationalFormat();
     }
 
 
     /**
-     * A valid number must in its E164 form contain between 5 and 15 digits
+     * Validate number of E.164 conformity
+     *
      * @return bool
      */
     public function isValid()
     {
         $nr = $this->getE164();
         $len = strlen($nr);
-        return ( $len >= 6 && $len <= 16 );
+        
+        return ($len >= 6 && $len <= 16);
     }
 
 
     /**
-     * Get name of country. Depends on country bank.
-     * @param string $lang Preferred return language, alpha 2 country code
-     * @return string name of country, empty string if none is avaliable
+     * Get name of country
+     *
+     * @return string Name of country, empty string if none is avaliable
      */
-    public function getCountry($lang = 'en')
+    public function getCountry()
     {
-        return $this->_countryLib->fetchByCC($this->_cc, $lang);
+        return $this->_countryLib->lookup($this->_cc);
     }
 
 
     /**
-     * Get carrier info. Depends on carrier bank.
-     * @return string name of carrier, empty string if none is avaliable
+     * Get name of carrier info
+     *
+     * @return string Empty string if no info is avaliable
      */
     public function getCarrier()
     {
-        return $this->_carrierLibs->fetchCarrier($this->_cc, $this->_ndc, $this->_sn);
+        // TODO hur ska anropet göras här
+        // detta stämmer inte med LookupInterface...
+        return $this->_carrierLibs[$this->_cc]->lookup($this->_cc, $this->_ndc, $this->_sn);
     }
 
 
     /**
-     * Get string describing area code area. Depends on area code bank.
+     * Get string describing area code area
+     *
      * @return string
      */
     public function getArea()
     {
-        return $this->_areaLibs->fetchArea($this->_cc, $this->_ndc);
+        // TODO här, och på andra ställen där jag letar efter libs i array,
+        // så måste jag kontrollera att det verkligen finns något lib
+        return $this->_areaLibs[$this->_cc]->lookup($this->_ndc);
     }
+
+    /*
+        skapa en getAreaLib som kolla om det finns något lib fö den här
+            landskoden
+        om det inte finns det så skapa en instans av det tomma biblioteket
+            null object helt enkelt
+        så kan min kod på alla andra ställen bara förutsätta att biblioteket finns....
+        
+        bra, det är rätt sätt att göra det på...
+    */
+
 
 
     /**
      * Generic group number
+     *
      * @param string $nr
+     *
      * @return string
      */
     static public function group($nr){
