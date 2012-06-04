@@ -417,15 +417,16 @@ class Number
             return '';
         }
         
-        // TODO här kan det bli två mellanrum i rad om ndc inte är definierat
-        // kan jag leva med det, eller fixa på en gång???
-        
-        return sprintf(
-            '%s%s %s %s',
-            self::CC_PREFIX,
-            $this->_cc,
-            $this->_ndc,
-            self::group($this->_sn)
+        return str_replace(
+            '  ',
+            ' ',
+            sprintf(
+                '%s%s %s %s',
+                self::CC_PREFIX,
+                $this->_cc,
+                $this->_ndc,
+                self::group($this->_sn)
+            )
         );
     }
 
@@ -456,14 +457,14 @@ class Number
      *
      * @return string
      */
-    public function format($cc = '46')
+    public function format()
     {
         if ($this->_cc == $this->_defaultCc) {
 
-            return $this->getInternationalFormat();
+            return $this->getNationalFormat();
         }
 
-        return $this->getNationalFormat();
+        return $this->getInternationalFormat();
     }
 
 

@@ -1,284 +1,286 @@
 <?php
 namespace itbz\phplibphone;
-use itbz\phplibphone\Swe\PhoneArea as SwePhoneArea;
-use PDO;
-use itbz\Cache\VoidCacher;
 
 
-class PhoneNumberTest extends \PHPUnit_Framework_TestCase
+class NumberTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function getPdo()
+    function testGetAreaCode()
     {
-        $pdo = new PDO('sqlite::memory:');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $pdo->query('CREATE TABLE lookup__Iso3166(country_code, country_code_alpha3, country_code_num, country_name_se, country_name_en, cc, PRIMARY KEY(country_code ASC));');
-        $pdo->query("INSERT INTO lookup__Iso3166 VALUES ('CA', 'CAN', '124', 'Kanada', 'Canada', '1')");
-        $pdo->query("INSERT INTO lookup__Iso3166 VALUES ('US', 'USA', '840', 'Usa', 'United States', '1')");
-        $pdo->query("INSERT INTO lookup__Iso3166 VALUES ('SE', 'SWE', '752', 'Sverige', 'Sweden', '46')");
-        return  $pdo;
-    }
-    
-    
-    private function getPhone()
-    {
-        $pdo = $this->getPdo();
-        $country = new Country($pdo, new VoidCacher());
-        $area = new SwePhoneArea();
-        $carrier = new PhoneCarrier();
-        $phone = new PhoneNumber($country, $area, $carrier);
-        return $phone;
-    }
-
-
-    public function testGetAreaCode()
-    {
-        $p = $this->getPhone();
-        $p->setNdc('8');
-        $c = $p->getAreaCode();
-        $this->assertEquals('08', $c);
+        $number = new Number(new EmptyLibrary());
+        $number->setNationalDestinationCode('8');
+        $this->assertEquals('08', $number->getAreaCode());
     }
 
     
-    public function testGetE164()
+    function testGetE164()
     {
-        $p = $this->getPhone();
-
-        $c = $p->getE164();
-        $this->assertEquals('', $c);
-
-        $p->setCc('46');
-        $p->setNdc('8');
-        $p->setSn('7740212');
-        $c = $p->getE164();
-        $this->assertEquals('+4687740212', $c);
+        $number = new Number(new EmptyLibrary());
+        $this->assertEquals('', $number->getE164());
+        $number->setCountryCode('46');
+        $number->setNationalDestinationCode('8');
+        $number->setSubscriberNumber('7740212');
+        $this->assertEquals('+4687740212', $number->getE164());
     }
 
 
-    public function testReset()
+    function testReset()
     {
-        $p = $this->getPhone();
-        $p->setCc('46');
-        $p->setNdc('8');
-        $p->setSn('7740212');
-        $c = $p->getE164();
-        $this->assertEquals('+4687740212', $c);
-
-        $p->reset();
-
-        $c = $p->getE164();
-        $this->assertEquals('', $c);
+        $number = new Number(new EmptyLibrary(), '46');
+        $number->setNationalDestinationCode('8');
+        $number->reset();
+        $this->assertEquals(
+            '+46',
+            $number->getE164(),
+            'Reset to default country code'
+        );
     }
 
 
-    public function testGetInternationalFormat()
+    function testGetInternationalFormat()
     {
-        $p = $this->getPhone();
+        $number = new Number(new EmptyLibrary());
 
-        $c = $p->getInternationalFormat();
-        $this->assertEquals('', $c);
+        $this->assertEquals('', $number->getInternationalFormat());
 
-        $p->setCc('46');
-        $p->setSn('7740212');
-        $c = $p->getInternationalFormat();
-        $this->assertEquals('+46 774 02 12', $c);
+        $number->setCountryCode('46');
+        $number->setSubscriberNumber('7740212');
+        $this->assertEquals(
+            '+46 774 02 12',
+            $number->getInternationalFormat(),
+            'No extra space when ndc is missing'
+        );
 
-        $p->setCc('46');
-        $p->setNdc('8');
-        $p->setSn('7740212');
-        $c = $p->getInternationalFormat();
-        $this->assertEquals('+46 8 774 02 12', $c);
+        $number->setCountryCode('46');
+        $number->setNationalDestinationCode('8');
+        $number->setSubscriberNumber('7740212');
+        $this->assertEquals(
+            '+46 8 774 02 12',
+            $number->getInternationalFormat()
+        );
     }
 
 
-    public function testGetNationalFormat()
+    function testGetNationalFormat()
     {
-        $p = $this->getPhone();
+        $number = new Number(new EmptyLibrary());
 
-        $c = $p->getNationalFormat();
-        $this->assertEquals('', $c);
+        $this->assertEquals('', $number->getNationalFormat());
 
-        $p->setSn('7740212');
-        $c = $p->getNationalFormat();
-        $this->assertEquals('774 02 12', $c);
+        $number->setSubscriberNumber('7740212');
+        $this->assertEquals('774 02 12', $number->getNationalFormat());
 
-        $p->setNdc('8');
-        $p->setSn('7740212');
-        $c = $p->getNationalFormat();
-        $this->assertEquals('08-774 02 12', $c);
+        $number->setNationalDestinationCode('8');
+        $number->setSubscriberNumber('7740212');
+        $this->assertEquals('08-774 02 12', $number->getNationalFormat());
     }
 
 
-    public function testFormat()
+    function testFormat()
     {
-        $p = $this->getPhone();
-        $p->setCc('46');
-        $p->setNdc('8');
-        $p->setSn('7740212');
+        $number = new Number(new EmptyLibrary(), '46');
 
-        $c = $p->format('45');
-        $this->assertEquals('+46 8 774 02 12', $c);
+        $number->setCountryCode('46');
+        $number->setNationalDestinationCode('8');
+        $number->setSubscriberNumber('7740212');
+        $this->assertEquals('08-774 02 12', $number->format());
 
-        $c = $p->format('46');
-        $this->assertEquals('08-774 02 12', $c);
+        $number->setCountryCode('45');
+        $this->assertEquals('+45 8 774 02 12', $number->format());
+
     }
 
 
-    public function testIsValid()
+    function testIsValid()
     {
-        $p = $this->getPhone();
-        $this->assertTrue(!$p->isValid());
-        $p->setCc('46');
-        $p->setNdc('8');
-        $p->setSn('7740212');
-        $this->assertTrue($p->isValid());
+        $number = new Number(new EmptyLibrary());
+        $this->assertTrue(!$number->isValid());
+        $number->setCountryCode('46');
+        $number->setNationalDestinationCode('8');
+        $number->setSubscriberNumber('7740212');
+        $this->assertTrue($number->isValid());
+
+        $number->setSubscriberNumber('7740212123456');
+        $this->assertFalse($number->isValid());
     }
 
 
-    public function testGetCountry()
+    function testGetCountry()
     {
-        $p = $this->getPhone();
+        $countryLib = $this->getMock(
+            '\itbz\phplibphone\EmptyLibrary',
+            array('lookup')
+        );
 
-        $c = $p->getCountry();
-        $this->assertEquals('', $c);
+        $countryLib->expects($this->once())
+                   ->method('lookup')
+                   ->with('46')
+                   ->will($this->returnValue('Sweden'));
 
-        $p->setCc('46');
-        $c = $p->getCountry();
-        $this->assertEquals('Sweden', $c);
+        $number = new Number($countryLib);
 
-        $c = $p->getCountry('se');
-        $this->assertEquals('Sverige', $c);
+        $number->setCountryCode('46');
+        $this->assertEquals('Sweden', $number->getCountry());
     }
 
 
-    public function testGetCarrier()
+    function testGetCarrier()
     {
-        $p = $this->getPhone();
+        $number = new Number(new EmptyLibrary());
 
-        $c = $p->getCarrier();
-        $this->assertEquals('', $c);
+        $carrierLib = $this->getMock(
+            '\itbz\phplibphone\EmptyCarrierLibrary',
+            array('lookup')
+        );
 
-        $p->setCc('46');
-        $p->setNdc('8');
-        $p->setSn('7740212');
-        $c = $p->getCarrier();
-        $this->assertEquals('', $c);
+        $carrierLib->expects($this->once())
+                   ->method('lookup')
+                   ->with('8', '7740212')
+                   ->will($this->returnValue('Telia'));
+
+        $number->setCarrierLib('46', $carrierLib);
+
+        $number->setCountryCode('46');
+        $number->setNationalDestinationCode('8');
+        $number->setSubscriberNumber('7740212');
+        $this->assertEquals('Telia', $number->getCarrier());
+
+        $number->setCountryCode('45');
+        $this->assertEquals('', $number->getCarrier());
     }
 
 
-    public function testGetArea()
+    function testGetArea()
     {
-        $p = $this->getPhone();
+        $number = new Number(new EmptyLibrary());
 
-        $c = $p->getArea();
-        $this->assertEquals('', $c);
+        $areaLib = $this->getMock(
+            '\itbz\phplibphone\EmptyLibrary',
+            array('lookup')
+        );
 
-        $p->setCc('46');
-        $p->setNdc('8');
-        $p->setSn('7740212');
-        $c = $p->getArea();
-        $this->assertEquals('Stockholm', $c);
+        $areaLib->expects($this->once())
+                   ->method('lookup')
+                   ->with('8')
+                   ->will($this->returnValue('Stockholm'));
+
+        $number->setAreaLib('46', $areaLib);
+
+        $number->setCountryCode('46');
+        $number->setNationalDestinationCode('8');
+        $number->setSubscriberNumber('7740212');
+        $this->assertEquals('Stockholm', $number->getArea());
+
+        $number->setCountryCode('45');
+        $this->assertEquals('', $number->getArea());
+    }
+
+/*
+    Använd data providers här
+    
+    Jag behöver mina lands och areabibliotek för att det ska vara enkelt att
+        forstätta här...
+
+    function testSetRaw()
+    {
+        $number = new Number(new EmptyLibrary());
+
+        $number->setRaw('+9987740212');
+        $this->assertEquals('99 87 74 02 12', $number->format());
+
+        $number->setRaw('+4687740212');
+        $this->assertEquals('08-774 02 12', $number->format());
+
+        $number->setRaw('087740212');
+        $this->assertEquals('08-774 02 12', $number->format());
+
+        $number->setRaw('87740212');
+        $this->assertEquals('877 402 12', $number->format());
+
+        $number->setRaw('+187740212');
+        $this->assertEquals('+1 877 402 12', $number->format());
+
+        $number->setRaw('087740212', '1');
+        $this->assertEquals('+1 877 402 12', $number->format());
+
+        $number->setRaw('87740212', '1');
+        $this->assertEquals('+1 877 402 12', $number->format());
+
+        $number->setRaw('');
+        $this->assertEquals('', $number->format());
     }
 
 
-    public function testGroup()
+    function testGetRaw()
     {
-        $p = $this->getPhone();
+        $number = new Number(new EmptyLibrary());
+        $number->setRaw('+4687740212');
+        $this->assertEquals('+4687740212', $number->getRaw());
+    }
 
-        $c = $p::group('1');
+
+    function testGetCc()
+    {
+        $number = new Number(new EmptyLibrary());
+        $number->setRaw('+4687740212');
+        $this->assertEquals('46', $number->getCc());
+    }
+
+
+    function testGetNdc()
+    {
+        $number = new Number(new EmptyLibrary());
+        $number->setRaw('+4687740212');
+        $this->assertEquals('8', $number->getNdc());
+    }
+
+
+    function testGetSn()
+    {
+        $number = new Number(new EmptyLibrary());
+        $number->setRaw('+4687740212');
+        $this->assertEquals('7740212', $number->getSn());
+    }
+
+
+    function testGroup()
+    {
+        $number = new Number(new EmptyLibrary());
+
+        $c = $number::group('1');
         $this->assertEquals('1', $c);
 
-        $c = $p::group('11');
+        $c = $number::group('11');
         $this->assertEquals('11', $c);
 
-        $c = $p::group('111');
+        $c = $number::group('111');
         $this->assertEquals('111', $c);
 
-        $c = $p::group('1111');
+        $c = $number::group('1111');
         $this->assertEquals('11 11', $c);
 
-        $c = $p::group('11111');
+        $c = $number::group('11111');
         $this->assertEquals('111 11', $c);
 
-        $c = $p::group('111111');
+        $c = $number::group('111111');
         $this->assertEquals('11 11 11', $c);
 
-        $c = $p::group('1111111');
+        $c = $number::group('1111111');
         $this->assertEquals('111 11 11', $c);
 
-        $c = $p::group('11111111');
+        $c = $number::group('11111111');
         $this->assertEquals('111 111 11', $c);
 
-        $c = $p::group('111111111');
+        $c = $number::group('111111111');
         $this->assertEquals('111 111 111', $c);
 
-        $c = $p::group('1111111111');
+        $c = $number::group('1111111111');
         $this->assertEquals('11 11 11 11 11', $c);
 
-        $c = $p::group('11111111111');
+        $c = $number::group('11111111111');
         $this->assertEquals('111 11 11 11 11', $c);
     }
 
 
-    public function testSetRaw()
-    {
-        $p = $this->getPhone();
-
-        $p->setRaw('+9987740212');
-        $this->assertEquals('99 87 74 02 12', $p->format());
-
-        $p->setRaw('+4687740212');
-        $this->assertEquals('08-774 02 12', $p->format());
-
-        $p->setRaw('087740212');
-        $this->assertEquals('08-774 02 12', $p->format());
-
-        $p->setRaw('87740212');
-        $this->assertEquals('877 402 12', $p->format());
-
-        $p->setRaw('+187740212');
-        $this->assertEquals('+1 877 402 12', $p->format());
-
-        $p->setRaw('087740212', '1');
-        $this->assertEquals('+1 877 402 12', $p->format());
-
-        $p->setRaw('87740212', '1');
-        $this->assertEquals('+1 877 402 12', $p->format());
-
-        $p->setRaw('');
-        $this->assertEquals('', $p->format());
-    }
-
-
-    public function testGetRaw()
-    {
-        $p = $this->getPhone();
-        $p->setRaw('+4687740212');
-        $this->assertEquals('+4687740212', $p->getRaw());
-    }
-
-
-    public function testGetCc()
-    {
-        $p = $this->getPhone();
-        $p->setRaw('+4687740212');
-        $this->assertEquals('46', $p->getCc());
-    }
-
-
-    public function testGetNdc()
-    {
-        $p = $this->getPhone();
-        $p->setRaw('+4687740212');
-        $this->assertEquals('8', $p->getNdc());
-    }
-
-
-    public function testGetSn()
-    {
-        $p = $this->getPhone();
-        $p->setRaw('+4687740212');
-        $this->assertEquals('7740212', $p->getSn());
-    }
-
+    */
 }
