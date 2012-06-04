@@ -12,6 +12,7 @@
  * @package phplibphone
  */
 namespace itbz\phplibphone;
+use itbz\phplibphone\Library\EmptyLibrary;
 
 
 /**
@@ -148,6 +149,25 @@ class Number
 
 
     /**
+     * Get area code lookup library for country code
+     *
+     * @param string $countryCode
+     *
+     * @return LookupInterface
+     */
+    public function getAreaLib($countryCode)
+    {
+        if (isset($this->_areaLibs[$countryCode])) {
+
+            return $this->_areaLibs[$countryCode];
+        }
+
+        return new EmptyLibrary();
+    }
+
+
+
+    /**
      * Register carrier code lookup library for country code
      *
      * @param string $countryCode
@@ -238,7 +258,7 @@ class Number
 
             if ($state == self::STATE_NDC) {
                 // Check if $part is a valid national destination code
-                if ($this->_areaLibs[$this->_cc]->lookup($part) != '') {
+                if ($this->getAreaLib($this->_cc)->lookup($part) != '') {
                     $this->_ndc = $part;
                     $part = '';
                     $state = self::STATE_SN;
@@ -476,20 +496,8 @@ class Number
      */
     public function getArea()
     {
-        // TODO här, och på andra ställen där jag letar efter libs i array,
-        // så måste jag kontrollera att det verkligen finns något lib
-        return $this->_areaLibs[$this->_cc]->lookup($this->_ndc);
+        return $this->getAreaLib($this->_cc)->lookup($this->_ndc);
     }
-
-    /*
-        skapa en getAreaLib som kolla om det finns något lib fö den här
-            landskoden
-        om det inte finns det så skapa en instans av det tomma biblioteket
-            null object helt enkelt
-        så kan min kod på alla andra ställen bara förutsätta att biblioteket finns....
-        
-        bra, det är rätt sätt att göra det på...
-    */
 
 
 
