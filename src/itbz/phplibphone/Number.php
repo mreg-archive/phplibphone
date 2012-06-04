@@ -526,7 +526,8 @@ class Number
      *
      * @return string
      */
-    static public function group($nr){
+    static public function group($nr)
+    {
         assert('is_string($nr)');
         $nr = preg_replace("/[\n \t]/", '', $nr);
         switch ( strlen($nr) ) {
@@ -546,24 +547,24 @@ class Number
                 return preg_replace("/^(.{3})(.{3})(.{2})/", '$1 $2 $3', $nr);
             case 9:
                 return preg_replace("/^(.{3})(.{3})(.{3})/", '$1 $2 $3', $nr);
-            default:
-                if ( strlen($nr)&1 ) {
-                    //odd length
-                    $nr = preg_replace(
-                        "/^([0-9]{3})([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?/",
-                        "$1 $2 $3 $4 $5 $6 $7",
-                        $nr
-                    );
-                } else {
-                    //even length
-                    $nr = preg_replace(
-                        "/^([0-9]{2})([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?/",
-                        "$1 $2 $3 $4 $5 $6 $7",
-                        $nr
-                    );
-                }
-                return trim($nr);
         }
+
+        if (strlen($nr)&1) {
+            //odd length
+            $nr = preg_replace(
+                "/^([0-9]{3})([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?/",
+                "$1 $2 $3 $4 $5 $6 $7",
+                $nr
+            );
+        } else {
+            //even length
+            $nr = preg_replace(
+                "/^([0-9]{2})([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?/",
+                "$1 $2 $3 $4 $5 $6 $7",
+                $nr
+            );
+        }
+        return trim($nr);
     }
 
 }
