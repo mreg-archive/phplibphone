@@ -10,30 +10,28 @@
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
  *
  * @package phplibphone
- *
- * @subpackage Library
  */
-namespace itbz\phplibphone\Library;
+namespace itbz\phplibphone;
 
 
 /**
- * Empty library null object
+ * Empty carrier library null object
  *
  * @package phplibphone
- *
- * @subpackage Library
  */
-class EmptyLibrary implements \itbz\phplibphone\LookupInterface
+class EmptyCarrierLibrary implements CarrierLookupInterface
 {
 
     /**
-     * Null object lookup
+     * Empty carrier library null object
      *
-     * @param string $nr
+     * @param string $ndc National destination number
+     *
+     * @param string $sn Subscriber number
      *
      * @return string Always returns the empty string
      */
-    public function lookup($nr)
+    public function lookup($ndc, $sn)
     {
         return '';
     }

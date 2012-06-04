@@ -12,8 +12,6 @@
  * @package phplibphone
  */
 namespace itbz\phplibphone;
-use itbz\phplibphone\Library\EmptyLibrary;
-use itbz\phplibphone\Library\EmptyCarrierLibrary;
 
 
 /**
