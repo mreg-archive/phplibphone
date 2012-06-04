@@ -23,7 +23,7 @@
     </target>
 
 
-    <target name="test" depends="getdependencies,createBuildDir">
+    <target name="test" depends="createBuildDir">
         <exec
             command="phpunit --coverage-html ${BUILD_DIR}/coverage"
             dir="${TEST_DIR}"
@@ -76,42 +76,6 @@
 
     <target name="createBuildDir">
         <mkdir dir="${BUILD_DIR}" />
-    </target>
-
-
-    <target name="getdependencies" depends="getcomposer">
-        <if>
-            <available file="${APP_ROOT}/vendor" />
-            <then>
-                <echo msg="Dependencies installed in vendor directory" />
-            </then>
-            <else>
-                <echo msg="Downloading dependencies using composer..." />
-                <exec
-                    command="php composer.phar install"
-                    dir="${APP_ROOT}"
-                    checkreturn="true"
-                    />
-            </else>
-        </if>
-    </target>
-
-
-    <target name="getcomposer">
-        <if>
-            <available file="${APP_ROOT}/composer.phar" />
-            <then>
-                <echo msg="Composer.phar installed" />
-            </then>
-            <else>
-                <echo msg="Downloading composer.phar..." />
-                <exec
-                    command="curl -s http://getcomposer.org/installer | php"
-                    dir="${APP_ROOT}"
-                    checkreturn="true"
-                    />
-            </else>
-        </if>
     </target>
 
 </project>
