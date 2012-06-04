@@ -13,6 +13,7 @@
  */
 namespace itbz\phplibphone;
 use itbz\phplibphone\Library\EmptyLibrary;
+use itbz\phplibphone\Library\EmptyCarrierLibrary;
 
 
 /**
@@ -141,7 +142,7 @@ class Number
      *
      * @return void
      */
-    public function registerAreaLib($countryCode, LookupInterface $areaLib)
+    public function setAreaLib($countryCode, LookupInterface $areaLib)
     {
         assert('is_scalar($countryCode)');
         $this->_areaLibs[$countryCode] = $areaLib;
@@ -166,20 +167,37 @@ class Number
     }
 
 
-
     /**
      * Register carrier code lookup library for country code
      *
      * @param string $countryCode
      *
-     * @param LookupInterface $carrier
+     * @param CarrierLookupInterface $carrier
      *
      * @return void
      */
-    public function registerCarrierLib($countryCode, LookupInterface $carrier)
+    public function setCarrierLib($countryCode, CarrierLookupInterface $carrier)
     {
         assert('is_scalar($countryCode)');
         $this->_carrierLibs[$countryCode] = $carrier;
+    }
+
+
+    /**
+     * Get carrier lookup library for country code
+     *
+     * @param string $countryCode
+     *
+     * @return CarrierLookupInterface
+     */
+    public function getCarrierLib($countryCode)
+    {
+        if (isset($this->_carrierLibs[$countryCode])) {
+
+            return $this->_carrierLibs[$countryCode];
+        }
+
+        return new EmptyCarrierLibrary();
     }
 
 
@@ -483,9 +501,10 @@ class Number
      */
     public function getCarrier()
     {
-        // TODO hur ska anropet göras här
-        // detta stämmer inte med LookupInterface...
-        return $this->_carrierLibs[$this->_cc]->lookup($this->_cc, $this->_ndc, $this->_sn);
+        return $this->getCarrierLib($this->_cc)->lookup(
+            $this->_ndc,
+            $this->_sn
+        );
     }
 
 
