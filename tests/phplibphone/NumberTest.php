@@ -1,5 +1,8 @@
 <?php
 namespace itbz\phplibphone;
+use itbz\phplibphone\Library\CountriesEn;
+use itbz\phplibphone\Library\CountriesSv;
+use itbz\phplibphone\Library\AreasSeSv;
 
 
 class NumberTest extends \PHPUnit_Framework_TestCase
@@ -130,15 +133,19 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
         $carrierLib = $this->getMock(
             '\itbz\phplibphone\EmptyCarrierLibrary',
-            array('lookup')
+            array('getCountryCode', 'lookup')
         );
+
+        $carrierLib->expects($this->once())
+                   ->method('getCountryCode')
+                   ->will($this->returnValue(46));
 
         $carrierLib->expects($this->once())
                    ->method('lookup')
                    ->with('8', '7740212')
                    ->will($this->returnValue('Telia'));
 
-        $number->setCarrierLib('46', $carrierLib);
+        $number->setCarrierLib($carrierLib);
 
         $number->setCountryCode('46');
         $number->setNationalDestinationCode('8');
@@ -155,16 +162,20 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $number = new Number(new EmptyLibrary());
 
         $areaLib = $this->getMock(
-            '\itbz\phplibphone\EmptyLibrary',
-            array('lookup')
+            '\itbz\phplibphone\AreaLookupInterface',
+            array('getCountryCode', 'lookup')
         );
 
         $areaLib->expects($this->once())
-                   ->method('lookup')
-                   ->with('8')
-                   ->will($this->returnValue('Stockholm'));
+                ->method('getCountryCode')
+                ->will($this->returnValue(46));
 
-        $number->setAreaLib('46', $areaLib);
+        $areaLib->expects($this->once())
+                ->method('lookup')
+                ->with('8')
+                ->will($this->returnValue('Stockholm'));
+
+        $number->setAreaLib($areaLib);
 
         $number->setCountryCode('46');
         $number->setNationalDestinationCode('8');
@@ -175,18 +186,14 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $number->getArea());
     }
 
-/*
-    Använd data providers här
-    
-    Jag behöver mina lands och areabibliotek för att det ska vara enkelt att
-        forstätta här...
 
     function testSetRaw()
     {
-        $number = new Number(new EmptyLibrary());
+        $number = new Number(new CountriesEn(), 46);
+        $number->setAreaLib(new AreasSeSv());
 
         $number->setRaw('+9987740212');
-        $this->assertEquals('99 87 74 02 12', $number->format());
+        $this->assertEquals('+998 774 02 12', $number->format());
 
         $number->setRaw('+4687740212');
         $this->assertEquals('08-774 02 12', $number->format());
@@ -200,11 +207,8 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $number->setRaw('+187740212');
         $this->assertEquals('+1 877 402 12', $number->format());
 
-        $number->setRaw('087740212', '1');
-        $this->assertEquals('+1 877 402 12', $number->format());
-
-        $number->setRaw('87740212', '1');
-        $this->assertEquals('+1 877 402 12', $number->format());
+        $number->setRaw('invalid');
+        $this->assertEquals('', $number->format());
 
         $number->setRaw('');
         $this->assertEquals('', $number->format());
@@ -219,27 +223,29 @@ class NumberTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    function testGetCc()
+    function testGetCountryCode()
     {
-        $number = new Number(new EmptyLibrary());
+        $number = new Number(new CountriesEn());
         $number->setRaw('+4687740212');
-        $this->assertEquals('46', $number->getCc());
+        $this->assertEquals('46', $number->getCountryCode());
     }
 
 
-    function testGetNdc()
+    function testGetNationalDestinationCode()
     {
-        $number = new Number(new EmptyLibrary());
+        $number = new Number(new CountriesEn());
+        $number->setAreaLib(new AreasSeSv());
         $number->setRaw('+4687740212');
-        $this->assertEquals('8', $number->getNdc());
+        $this->assertEquals('8', $number->getNationalDestinationCode());
     }
 
 
-    function testGetSn()
+    function testGetSubscriberNumber()
     {
-        $number = new Number(new EmptyLibrary());
+        $number = new Number(new CountriesSv());
+        $number->setAreaLib(new AreasSeSv());
         $number->setRaw('+4687740212');
-        $this->assertEquals('7740212', $number->getSn());
+        $this->assertEquals('7740212', $number->getSubscriberNumber());
     }
 
 
@@ -282,5 +288,10 @@ class NumberTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    */
+    function testEmptyCarrierCountryCode()
+    {
+        $emptyCarrier = new EmptyCarrierLibrary();
+        $this->assertSame(0, $emptyCarrier->getCountryCode());
+    }
+
 }

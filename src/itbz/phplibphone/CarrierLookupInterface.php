@@ -23,6 +23,14 @@ interface CarrierLookupInterface
 {
 
     /**
+     * Get country code this library handles
+     *
+     * @return int
+     */
+    public function getCountryCode();
+
+
+    /**
      * Lookup number
      *
      * @param string $ndc National destination number

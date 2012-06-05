@@ -36,4 +36,15 @@ class EmptyCarrierLibrary implements CarrierLookupInterface
         return '';
     }
 
+
+    /**
+     * Get country code this library handles
+     *
+     * @return int
+     */
+    public function getCountryCode()
+    {
+        return 0;
+    }
+
 }

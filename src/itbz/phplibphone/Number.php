@@ -132,17 +132,15 @@ class Number
 
     
     /**
-     * Register area code lookup library for country code
-     *
-     * @param string $countryCode
+     * Register area code lookup library
      *
      * @param LookupInterface $areaLib
      *
      * @return void
      */
-    public function setAreaLib($countryCode, LookupInterface $areaLib)
+    public function setAreaLib(AreaLookupInterface $areaLib)
     {
-        assert('is_scalar($countryCode)');
+        $countryCode = $areaLib->getCountryCode();
         $this->_areaLibs[$countryCode] = $areaLib;
     }
 
@@ -166,17 +164,15 @@ class Number
 
 
     /**
-     * Register carrier code lookup library for country code
-     *
-     * @param string $countryCode
+     * Register carrier code lookup library
      *
      * @param CarrierLookupInterface $carrier
      *
      * @return void
      */
-    public function setCarrierLib($countryCode, CarrierLookupInterface $carrier)
+    public function setCarrierLib(CarrierLookupInterface $carrier)
     {
-        assert('is_scalar($countryCode)');
+        $countryCode = $carrier->getCountryCode();
         $this->_carrierLibs[$countryCode] = $carrier;
     }
 
