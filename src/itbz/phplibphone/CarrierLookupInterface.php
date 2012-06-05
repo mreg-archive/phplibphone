@@ -33,7 +33,7 @@ interface CarrierLookupInterface
     /**
      * Lookup number
      *
-     * @param string $ndc National destination number
+     * @param string $ndc National destination code
      *
      * @param string $sn Subscriber number
      *
