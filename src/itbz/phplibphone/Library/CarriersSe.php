@@ -25,7 +25,7 @@ use SimpleXMLElement;
  *
  * @subpackage Library
  */
-class PhoneCarrier implements \itbz\phplibphone\CarrierLookupInterface
+class CarriersSe implements \itbz\phplibphone\CarrierLookupInterface
 {
 
     /**
@@ -46,34 +46,35 @@ class PhoneCarrier implements \itbz\phplibphone\CarrierLookupInterface
      *
      * @param string $sn Subscriber number
      *
-     * @return string Name of carrier, empty string if nothing could be fetched
+     * @return string Carrier description
      *
      * @throws Exception if unable to reach api.pts.se, or XML is broken
      */
-    public function lookup($ndc, $sn);
+    public function lookup($ndc, $sn)
+    {
         $url = "http://api.pts.se/ptsnumber/ptsnumber.asmx/SearchByNumber";
         $query = sprintf('?Ndc=%sNumber=%s', urlencode($ndc), urlencode($sn));
         $page = @file_get_contents($url . $query);
         
         if ($page) {
-            throw new Exception("Unable to fetch carrier from $url");
+            throw new Exception("Unable to fetch carrier from '$url'");
         }
 
         libxml_use_internal_errors(TRUE);
         $xml = new SimpleXMLElement($page);
 
-        if (!$xml instanceof SimpleXMLElement || !isset($xml->Operator)) {
-            throw new Exception("Invalid XML returned from $url");
+        if (!$xml instanceof SimpleXMLElement) {
+            throw new Exception("Invalid XML returned from '$url'");
         }
 
-        if (
-            $xml->Operator=='Ogiltigt värde'
-            || $xml->Operator=='Finns ingen operatör med detta nummer'
-        ) {
-            return '';
+        foreach ($xml->children() as $node) {
+            if ($node->getName() == 'Operator') {
+
+                return (string)$node;
+            }
         }
-        
-        return (string)$xml->Operator;
+
+        throw new Exception("Operator node missing from '$url'");
     }
 
 }

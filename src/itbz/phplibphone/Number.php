@@ -134,7 +134,7 @@ class Number
     /**
      * Register area code lookup library
      *
-     * @param LookupInterface $areaLib
+     * @param AreaLookupInterface $areaLib
      *
      * @return void
      */
@@ -148,7 +148,7 @@ class Number
     /**
      * Get area code lookup library for country code
      *
-     * @param string $countryCode
+     * @param string/int $countryCode
      *
      * @return LookupInterface
      */
@@ -180,7 +180,7 @@ class Number
     /**
      * Get carrier lookup library for country code
      *
-     * @param string $countryCode
+     * @param string/int $countryCode
      *
      * @return CarrierLookupInterface
      */
@@ -548,15 +548,15 @@ class Number
         if (strlen($nr)&1) {
             //odd length
             $nr = preg_replace(
-                "/^([0-9]{3})([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?/",
-                "$1 $2 $3 $4 $5 $6 $7",
+                "/^([0-9]{3})([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?/",
+                "$1 $2 $3 $4 $5 $6",
                 $nr
             );
         } else {
             //even length
             $nr = preg_replace(
-                "/^([0-9]{2})([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?/",
-                "$1 $2 $3 $4 $5 $6 $7",
+                "/^([0-9]{2})([0-9]{2})?([0-9]{2})?([0-9]{2})?([0-9]{2})?/",
+                "$1 $2 $3 $4 $5 $6",
                 $nr
             );
         }
