@@ -53,10 +53,10 @@ class CarriersSe implements \itbz\phplibphone\CarrierLookupInterface
     public function lookup($ndc, $sn)
     {
         $url = "http://api.pts.se/ptsnumber/ptsnumber.asmx/SearchByNumber";
-        $query = sprintf('?Ndc=%sNumber=%s', urlencode($ndc), urlencode($sn));
+        $query = sprintf('?Ndc=%s&Number=%s', urlencode($ndc), urlencode($sn));
         $page = @file_get_contents($url . $query);
         
-        if ($page) {
+        if (!$page) {
             throw new Exception("Unable to fetch carrier from '$url'");
         }
 
