@@ -6,13 +6,13 @@ Parse E.164 compliant phone numbers
 Identifies country and area codes (and names) via loaded lookup libraries.
 
 To create a parser inject a country code library and optionally specify a
-default country code used when parsing numbers with no explicit conutry code.
+default country code used when parsing numbers with no explicit country code.
 To create a parser with country names i english and 46 as the default country
 code use:
 
     use itbz\phplibphone\Number;
     use itbz\phplibphone\Library\CountriesEn;
-    $parser = new Number(new CountriesSv, 46);
+    $parser = new Number(new CountriesEn, 46);
 
 Register area code libraries to enable phplibphone to correctly identify area
 codes.
@@ -20,8 +20,8 @@ codes.
     use itbz\phplibphone\Library\AreasSeSv;
     $parser->setAreaLib(new AreasSeSv);
 
-Parse user imputed numbers with the `setRaw()` method. Spaces and unknown
-characters are ignored.
+Parse numbers with the `setRaw()` method. Spaces and unknown characters are
+ignored.
 
     $parser->setRaw('087740212');
 
