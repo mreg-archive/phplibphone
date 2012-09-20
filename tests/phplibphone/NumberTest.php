@@ -1,8 +1,8 @@
 <?php
 namespace itbz\phplibphone;
-use itbz\phplibphone\Library\CountriesEn;
-use itbz\phplibphone\Library\CountriesSv;
+use itbz\phplibphone\Library\Countries;
 use itbz\phplibphone\Library\AreasSeSv;
+use itbz\phpcountry\Country as PhpCountry;
 
 
 class NumberTest extends \PHPUnit_Framework_TestCase
@@ -189,7 +189,10 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     function testSetRaw()
     {
-        $number = new Number(new CountriesEn(), 46);
+        $phpCountry = new PhpCountry;
+        $phpCountry->setLang('en');
+
+        $number = new Number(new Countries($phpCountry), 46);
         $number->setAreaLib(new AreasSeSv());
 
         $number->setRaw('+9987740212');
@@ -225,7 +228,10 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     function testGetCountryCode()
     {
-        $number = new Number(new CountriesEn());
+        $phpCountry = new PhpCountry;
+        $phpCountry->setLang('en');
+        $number = new Number(new Countries($phpCountry));
+
         $number->setRaw('+4687740212');
         $this->assertEquals('46', $number->getCountryCode());
     }
@@ -233,7 +239,10 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     function testGetNationalDestinationCode()
     {
-        $number = new Number(new CountriesEn());
+        $phpCountry = new PhpCountry;
+        $phpCountry->setLang('en');
+        $number = new Number(new Countries($phpCountry));
+
         $number->setAreaLib(new AreasSeSv());
         $number->setRaw('+4687740212');
         $this->assertEquals('8', $number->getNationalDestinationCode());
@@ -242,7 +251,9 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     function testGetSubscriberNumber()
     {
-        $number = new Number(new CountriesSv());
+        $phpCountry = new PhpCountry;
+        $phpCountry->setLang('sv');
+        $number = new Number(new Countries($phpCountry));
         $number->setAreaLib(new AreasSeSv());
         $number->setRaw('+4687740212');
         $this->assertEquals('7740212', $number->getSubscriberNumber());

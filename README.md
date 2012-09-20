@@ -11,8 +11,13 @@ To create a parser with country names i english and 46 as the default country
 code use:
 
     use itbz\phplibphone\Number;
-    use itbz\phplibphone\Library\CountriesEn;
-    $parser = new Number(new CountriesEn, 46);
+    use itbz\phplibphone\Library\Countries;
+    use itbz\phpcountry\Country as PhpCountry;
+
+    $phpCountry = new PhpCountry;
+    $phpCountry->setLang('en');
+
+    $parser = new Number($phpCountry, 46);
 
 Register area code libraries to enable phplibphone to correctly identify area
 codes.
