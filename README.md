@@ -68,3 +68,8 @@ Retrieve parsed information
     echo $parser->getArea();
     // Stockholm
 
+
+The complete documentation
+--------------------------
+
+http://itbz.github.com/packages/phplibphone.html
