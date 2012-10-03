@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
 
+namespace itbz\phplibphone;
 
 /**
  * Interface for looking up carrier information
@@ -21,7 +20,6 @@ namespace itbz\phplibphone;
  */
 interface CarrierLookupInterface
 {
-
     /**
      * Get country code this library handles
      *
@@ -29,16 +27,13 @@ interface CarrierLookupInterface
      */
     public function getCountryCode();
 
-
     /**
      * Lookup number
      *
      * @param string $ndc National destination code
-     *
      * @param string $sn Subscriber number
      *
      * @return string Data found, empty string if nothing was found
      */
     public function lookup($ndc, $sn);
-
 }

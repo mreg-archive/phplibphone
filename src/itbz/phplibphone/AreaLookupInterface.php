@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
 
+namespace itbz\phplibphone;
 
 /**
  * Interface for area code lookup libraries
@@ -21,12 +20,10 @@ namespace itbz\phplibphone;
  */
 interface AreaLookupInterface extends LookupInterface
 {
-
     /**
      * Get country code this library handles
      *
      * @return int
      */
     public function getCountryCode();
-
 }

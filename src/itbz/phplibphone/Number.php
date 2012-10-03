@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
 
+namespace itbz\phplibphone;
 
 /**
  * Parse phone numbers
@@ -21,100 +20,86 @@ namespace itbz\phplibphone;
  */
 class Number
 {
-
     /**
      * Area code prefix
      */
     const TRUNK_PREFIX = '0';
-
 
     /**
      * Country code prefix
      */
     const CC_PREFIX = '+';
 
-
     /**
      * Contry code parsing state
      */
     const STATE_CC = 1;
-
 
     /**
      * Nation destination code parsing state
      */
     const STATE_NDC = 2;
 
-
     /**
      * Subscriber number parsing state
      */
     const STATE_SN = 0;
-
 
     /**
      * Country code lookup library
      *
      * @var LookupInterface
      */
-    private $_countryLib;
-
+    private $countryLib;
 
     /**
      * Array of area code lookup libraries
      *
      * @var array
      */
-    private $_areaLibs = array();
-
+    private $areaLibs = array();
 
     /**
      * Array of carrier lookup libraries
      *
      * @var array
      */
-    private $_carrierLibs = array();
-
+    private $carrierLibs = array();
 
     /**
      * Default country code
      *
      * @var string
      */
-    private $_defaultCc;
-
+    private $defaultCc;
 
     /**
      * Raw number input
      *
      * @var string
      */
-    private $_raw = '';
-
+    private $raw = '';
 
     /**
      * Country code
      *
      * @var string
      */
-    private $_cc = '';
+    private $cc = '';
 
-    
     /**
      * National destination code
      *
      * @var string
      */
-    private $_ndc = '';
-    
+    private $ndc = '';
 
     /**
      * Subscriber number
      *
      * @var string
      */
-    private $_sn = '';
-
+    private $sn = '';
 
     /**
      * Country code lookup library is required
@@ -126,11 +111,10 @@ class Number
      */
     public function __construct(LookupInterface $countryLib, $defaultCc = '')
     {
-        $this->_countryLib = $countryLib;
-        $this->_defaultCc = (string)$defaultCc;
+        $this->countryLib = $countryLib;
+        $this->defaultCc = (string)$defaultCc;
     }
 
-    
     /**
      * Register area code lookup library
      *
@@ -141,9 +125,8 @@ class Number
     public function setAreaLib(AreaLookupInterface $areaLib)
     {
         $countryCode = $areaLib->getCountryCode();
-        $this->_areaLibs[$countryCode] = $areaLib;
+        $this->areaLibs[$countryCode] = $areaLib;
     }
-
 
     /**
      * Get area code lookup library for country code
@@ -154,14 +137,13 @@ class Number
      */
     public function getAreaLib($countryCode)
     {
-        if (isset($this->_areaLibs[$countryCode])) {
+        if (isset($this->areaLibs[$countryCode])) {
 
-            return $this->_areaLibs[$countryCode];
+            return $this->areaLibs[$countryCode];
         }
 
         return new EmptyLibrary();
     }
-
 
     /**
      * Register carrier code lookup library
@@ -173,9 +155,8 @@ class Number
     public function setCarrierLib(CarrierLookupInterface $carrier)
     {
         $countryCode = $carrier->getCountryCode();
-        $this->_carrierLibs[$countryCode] = $carrier;
+        $this->carrierLibs[$countryCode] = $carrier;
     }
-
 
     /**
      * Get carrier lookup library for country code
@@ -186,14 +167,13 @@ class Number
      */
     public function getCarrierLib($countryCode)
     {
-        if (isset($this->_carrierLibs[$countryCode])) {
+        if (isset($this->carrierLibs[$countryCode])) {
 
-            return $this->_carrierLibs[$countryCode];
+            return $this->carrierLibs[$countryCode];
         }
 
         return new EmptyCarrierLibrary();
     }
-
 
     /**
      * Reset container
@@ -202,12 +182,11 @@ class Number
      */
     public function reset()
     {
-        $this->_raw = '';
-        $this->_cc = $this->_defaultCc;
-        $this->_ndc = '';
-        $this->_sn = '';
+        $this->raw = '';
+        $this->cc = $this->defaultCc;
+        $this->ndc = '';
+        $this->sn = '';
     }
-
 
     /**
      * Set raw number
@@ -222,13 +201,13 @@ class Number
     {
         assert('is_string($nr)');
         $this->reset();
-        $this->_raw = $nr;
+        $this->raw = $nr;
 
         $len = strlen($nr);
         if ($len == 0) {
             $nr = '0';
             $len = 1;
-        }    
+        }
 
         // Set parsing state
         switch ( $nr[0] ) {
@@ -244,22 +223,22 @@ class Number
                 $step = 0;
                 $state = self::STATE_SN;
         }
-        
+
         // Active parsing part
         $part = '';
 
         // Step through number
-        for (; $step < $len; $step++ ) {
+        for (; $step < $len; $step++) {
             if (!ctype_digit($nr[$step])) {
                 continue;
             }
 
             $part .= $nr[$step];
-            
+
             if ($state == self::STATE_CC) {
                 // Check if $part is a valid country code
-                if ($this->_countryLib->lookup($part) != '') {
-                    $this->_cc = $part;
+                if ($this->countryLib->lookup($part) != '') {
+                    $this->cc = $part;
                     $part = '';
                     $state = self::STATE_NDC;
                 } elseif (strlen($part) >= 5) {
@@ -270,8 +249,8 @@ class Number
 
             if ($state == self::STATE_NDC) {
                 // Check if $part is a valid national destination code
-                if ($this->getAreaLib($this->_cc)->lookup($part) != '') {
-                    $this->_ndc = $part;
+                if ($this->getAreaLib($this->cc)->lookup($part) != '') {
+                    $this->ndc = $part;
                     $part = '';
                     $state = self::STATE_SN;
                 } elseif (strlen($part) >= 3) {
@@ -280,11 +259,10 @@ class Number
                 }
             }
         }
-        
-        // The rest is subscriber number
-        $this->_sn = $part;
-    }
 
+        // The rest is subscriber number
+        $this->sn = $part;
+    }
 
     /**
      * Get unformatted number
@@ -295,9 +273,8 @@ class Number
      */
     public function getRaw()
     {
-        return $this->_raw;
+        return $this->raw;
     }
-
 
     /**
      * Set country code
@@ -309,9 +286,8 @@ class Number
     public function setCountryCode($cc)
     {
         assert('is_string($cc)');
-        $this->_cc = $cc;
+        $this->cc = $cc;
     }
-
 
     /**
      * Set national destination code
@@ -323,9 +299,8 @@ class Number
     public function setNationalDestinationCode($ndc)
     {
         assert('is_string($ndc)');
-        $this->_ndc = $ndc;
+        $this->ndc = $ndc;
     }
-
 
     /**
      * Set subscriber number
@@ -337,9 +312,8 @@ class Number
     public function setSubscriberNumber($sn)
     {
         assert('is_string($sn)');
-        $this->_sn = $sn;
+        $this->sn = $sn;
     }
-
 
     /**
      * Get country code
@@ -348,9 +322,8 @@ class Number
      */
     public function getCountryCode()
     {
-        return $this->_cc;
+        return $this->cc;
     }
-
 
     /**
      * Get national destination code
@@ -359,9 +332,8 @@ class Number
      */
     public function getNationalDestinationCode()
     {
-        return $this->_ndc;
+        return $this->ndc;
     }
-
 
     /**
      * Get subscriber number
@@ -370,9 +342,8 @@ class Number
      */
     public function getSubscriberNumber()
     {
-        return $this->_sn;
+        return $this->sn;
     }
-
 
     /**
      * Get area code
@@ -381,9 +352,8 @@ class Number
      */
     public function getAreaCode()
     {
-        return empty($this->_ndc) ? '' : self::TRUNK_PREFIX . $this->_ndc;
+        return empty($this->ndc) ? '' : self::TRUNK_PREFIX . $this->ndc;
     }
-
 
     /**
      * Get number formatted according to E164
@@ -392,14 +362,13 @@ class Number
      */
     public function getE164()
     {
-        $num = $this->_cc . $this->_ndc . $this->_sn;
+        $num = $this->cc . $this->ndc . $this->sn;
         if (!empty($num)) {
             $num = "+$num";
         }
 
         return $num;
     }
-
 
     /**
      * Get number formatted for internation calls
@@ -408,24 +377,23 @@ class Number
      */
     public function getInternationalFormat()
     {
-        if (empty($this->_cc)) {
+        if (empty($this->cc)) {
 
             return '';
         }
-        
+
         return str_replace(
             '  ',
             ' ',
             sprintf(
                 '%s%s %s %s',
                 self::CC_PREFIX,
-                $this->_cc,
-                $this->_ndc,
-                self::group($this->_sn)
+                $this->cc,
+                $this->ndc,
+                self::group($this->sn)
             )
         );
     }
-
 
     /**
      * Get number in national format
@@ -438,12 +406,11 @@ class Number
     {
         $areaCode = $this->getAreaCode();
         if (!empty($areaCode)) {
-            $areaCode .= '-'; 
+            $areaCode .= '-';
         }
-        
-        return $areaCode . self::group($this->_sn);
-    }
 
+        return $areaCode . self::group($this->sn);
+    }
 
     /**
      * Get phone number in national or international format
@@ -455,14 +422,13 @@ class Number
      */
     public function format()
     {
-        if ($this->_cc == $this->_defaultCc) {
+        if ($this->cc == $this->defaultCc) {
 
             return $this->getNationalFormat();
         }
 
         return $this->getInternationalFormat();
     }
-
 
     /**
      * Validate number of E.164 conformity
@@ -473,10 +439,9 @@ class Number
     {
         $nr = $this->getE164();
         $len = strlen($nr);
-        
+
         return ($len >= 6 && $len <= 16);
     }
-
 
     /**
      * Get name of country
@@ -485,9 +450,8 @@ class Number
      */
     public function getCountry()
     {
-        return $this->_countryLib->lookup($this->_cc);
+        return $this->countryLib->lookup($this->cc);
     }
-
 
     /**
      * Get name of carrier info
@@ -496,12 +460,11 @@ class Number
      */
     public function getCarrier()
     {
-        return $this->getCarrierLib($this->_cc)->lookup(
-            $this->_ndc,
-            $this->_sn
+        return $this->getCarrierLib($this->cc)->lookup(
+            $this->ndc,
+            $this->sn
         );
     }
-
 
     /**
      * Get string describing area code area
@@ -510,10 +473,8 @@ class Number
      */
     public function getArea()
     {
-        return $this->getAreaLib($this->_cc)->lookup($this->_ndc);
+        return $this->getAreaLib($this->cc)->lookup($this->ndc);
     }
-
-
 
     /**
      * Generic group number
@@ -522,7 +483,7 @@ class Number
      *
      * @return string
      */
-    static public function group($nr)
+    public static function group($nr)
     {
         assert('is_string($nr)');
         $nr = preg_replace("/[\n \t]/", '', $nr);
@@ -560,7 +521,7 @@ class Number
                 $nr
             );
         }
+
         return trim($nr);
     }
-
 }

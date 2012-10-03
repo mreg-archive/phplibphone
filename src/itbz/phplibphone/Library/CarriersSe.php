@@ -8,26 +8,21 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
- * @package phplibphone
- *
- * @subpackage Library
+ * @package phplibphone\Library
  */
+
 namespace itbz\phplibphone\Library;
+
 use itbz\phplibphone\Exception;
 use SimpleXMLElement;
-
 
 /**
  * Fetch carrier information for swedish phone numbers from api.pts.se
  *
- * @package phplibphone
- *
- * @subpackage Library
+ * @package phplibphone\Library
  */
 class CarriersSe implements \itbz\phplibphone\CarrierLookupInterface
 {
-
     /**
      * Get country code this library handles
      *
@@ -38,12 +33,10 @@ class CarriersSe implements \itbz\phplibphone\CarrierLookupInterface
         return 46;
     }
 
-
     /**
      * Fetch carrier information from api.pts.se
      *
      * @param string $ndc National destination code
-     *
      * @param string $sn Subscriber number
      *
      * @return string Carrier description
@@ -55,12 +48,12 @@ class CarriersSe implements \itbz\phplibphone\CarrierLookupInterface
         $url = "http://api.pts.se/ptsnumber/ptsnumber.asmx/SearchByNumber";
         $query = sprintf('?Ndc=%s&Number=%s', urlencode($ndc), urlencode($sn));
         $page = @file_get_contents($url . $query);
-        
+
         if (!$page) {
             throw new Exception("Unable to fetch carrier from '$url'");
         }
 
-        libxml_use_internal_errors(TRUE);
+        libxml_use_internal_errors(true);
         $xml = new SimpleXMLElement($page);
 
         if (!$xml instanceof SimpleXMLElement) {
@@ -76,5 +69,4 @@ class CarriersSe implements \itbz\phplibphone\CarrierLookupInterface
 
         throw new Exception("Operator node missing from '$url'");
     }
-
 }

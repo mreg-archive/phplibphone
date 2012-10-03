@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
 
+namespace itbz\phplibphone;
 
 /**
  * Base exception for phplibphone

@@ -1,22 +1,20 @@
 <?php
 namespace itbz\phplibphone;
+
 use itbz\phplibphone\Library\Countries;
 use itbz\phplibphone\Library\AreasSeSv;
 use itbz\phpcountry\Country as PhpCountry;
 
-
 class NumberTest extends \PHPUnit_Framework_TestCase
 {
-
-    function testGetAreaCode()
+    public function testGetAreaCode()
     {
         $number = new Number(new EmptyLibrary());
         $number->setNationalDestinationCode('8');
         $this->assertEquals('08', $number->getAreaCode());
     }
 
-    
-    function testGetE164()
+    public function testGetE164()
     {
         $number = new Number(new EmptyLibrary());
         $this->assertEquals('', $number->getE164());
@@ -26,8 +24,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('+4687740212', $number->getE164());
     }
 
-
-    function testReset()
+    public function testReset()
     {
         $number = new Number(new EmptyLibrary(), '46');
         $number->setNationalDestinationCode('8');
@@ -39,8 +36,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-
-    function testGetInternationalFormat()
+    public function testGetInternationalFormat()
     {
         $number = new Number(new EmptyLibrary());
 
@@ -63,8 +59,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-
-    function testGetNationalFormat()
+    public function testGetNationalFormat()
     {
         $number = new Number(new EmptyLibrary());
 
@@ -78,8 +73,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('08-774 02 12', $number->getNationalFormat());
     }
 
-
-    function testFormat()
+    public function testFormat()
     {
         $number = new Number(new EmptyLibrary(), '46');
 
@@ -93,8 +87,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     }
 
-
-    function testIsValid()
+    public function testIsValid()
     {
         $number = new Number(new EmptyLibrary());
         $this->assertTrue(!$number->isValid());
@@ -107,8 +100,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($number->isValid());
     }
 
-
-    function testGetCountry()
+    public function testGetCountry()
     {
         $countryLib = $this->getMock(
             '\itbz\phplibphone\EmptyLibrary',
@@ -126,8 +118,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Sweden', $number->getCountry());
     }
 
-
-    function testGetCarrier()
+    public function testGetCarrier()
     {
         $number = new Number(new EmptyLibrary());
 
@@ -156,8 +147,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $number->getCarrier());
     }
 
-
-    function testGetArea()
+    public function testGetArea()
     {
         $number = new Number(new EmptyLibrary());
 
@@ -186,8 +176,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $number->getArea());
     }
 
-
-    function testSetRaw()
+    public function testSetRaw()
     {
         $phpCountry = new PhpCountry;
         $phpCountry->setLang('en');
@@ -217,16 +206,14 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $number->format());
     }
 
-
-    function testGetRaw()
+    public function testGetRaw()
     {
         $number = new Number(new EmptyLibrary());
         $number->setRaw('+4687740212');
         $this->assertEquals('+4687740212', $number->getRaw());
     }
 
-
-    function testGetCountryCode()
+    public function testGetCountryCode()
     {
         $phpCountry = new PhpCountry;
         $phpCountry->setLang('en');
@@ -236,8 +223,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('46', $number->getCountryCode());
     }
 
-
-    function testGetNationalDestinationCode()
+    public function testGetNationalDestinationCode()
     {
         $phpCountry = new PhpCountry;
         $phpCountry->setLang('en');
@@ -248,8 +234,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('8', $number->getNationalDestinationCode());
     }
 
-
-    function testGetSubscriberNumber()
+    public function testGetSubscriberNumber()
     {
         $phpCountry = new PhpCountry;
         $phpCountry->setLang('sv');
@@ -259,8 +244,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('7740212', $number->getSubscriberNumber());
     }
 
-
-    function testGroup()
+    public function testGroup()
     {
         $number = new Number(new EmptyLibrary());
 
@@ -298,11 +282,9 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('111 11 11 11 11', $c);
     }
 
-
-    function testEmptyCarrierCountryCode()
+    public function testEmptyCarrierCountryCode()
     {
         $emptyCarrier = new EmptyCarrierLibrary();
         $this->assertSame(0, $emptyCarrier->getCountryCode());
     }
-
 }

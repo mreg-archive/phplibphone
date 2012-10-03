@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
 
+namespace itbz\phplibphone;
 
 /**
  * Empty carrier library null object
@@ -21,12 +20,10 @@ namespace itbz\phplibphone;
  */
 class EmptyCarrierLibrary implements CarrierLookupInterface
 {
-
     /**
      * Empty carrier library null object
      *
      * @param string $ndc National destination number
-     *
      * @param string $sn Subscriber number
      *
      * @return string Always returns the empty string
@@ -35,7 +32,6 @@ class EmptyCarrierLibrary implements CarrierLookupInterface
     {
         return '';
     }
-
 
     /**
      * Get country code this library handles
@@ -46,5 +42,4 @@ class EmptyCarrierLibrary implements CarrierLookupInterface
     {
         return 0;
     }
-
 }

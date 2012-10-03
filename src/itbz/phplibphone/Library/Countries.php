@@ -8,32 +8,27 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
- * @package phplibphone
- *
- * @subpackage Library
+ * @package phplibphone\Library
  */
+
 namespace itbz\phplibphone\Library;
+
 use itbz\phpcountry\Country;
 use itbz\phpcountry\TranslationException;
-
 
 /**
  * Map country codes to country names
  *
- * @package phplibphone
- *
- * @subpackage Library
+ * @package phplibphone\Library
  */
 class Countries implements \itbz\phplibphone\LookupInterface
 {
-
     /**
      * The country code map
      *
      * @var array
      */
-    static private $_countries = array(
+    private static $countries = array(
         1 => 'US',
         1242 => 'BS',
         1246 => 'BB',
@@ -262,14 +257,12 @@ class Countries implements \itbz\phplibphone\LookupInterface
         998 => 'UZ'
     );
 
-
     /**
      * ISO 3166-1 country code translator
      *
      * @var Country
      */
-    private $_countryCodes;
-
+    private $countryCodes;
 
     /**
      * Map country codes to country names
@@ -279,9 +272,8 @@ class Countries implements \itbz\phplibphone\LookupInterface
      */
     public function __construct(Country $countryCodeTranslator)
     {
-        $this->_countryCodes = $countryCodeTranslator;
+        $this->countryCodes = $countryCodeTranslator;
     }
-
 
     /**
      * Lookup country code
@@ -292,17 +284,16 @@ class Countries implements \itbz\phplibphone\LookupInterface
      */
     public function lookup($nr)
     {
-        if (isset(self::$_countries[$nr])) {
+        if (isset(self::$countries[$nr])) {
             try {
-                
-                return $this->_countryCodes->translate(self::$_countries[$nr]);
+
+                return $this->countryCodes->translate(self::$countries[$nr]);
             } catch (TranslationException $e) {
-                
+
                 return '';
             }
         }
 
         return '';
     }
-
 }

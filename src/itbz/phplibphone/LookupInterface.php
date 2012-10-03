@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
 
+namespace itbz\phplibphone;
 
 /**
  * Standard interface for lookup data collections
@@ -21,7 +20,6 @@ namespace itbz\phplibphone;
  */
 interface LookupInterface
 {
-
     /**
      * Lookup number
      *
@@ -30,5 +28,4 @@ interface LookupInterface
      * @return string Data found, empty string if nothing was found
      */
     public function lookup($nr);
-
 }

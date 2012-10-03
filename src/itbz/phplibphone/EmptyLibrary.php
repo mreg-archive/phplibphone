@@ -8,11 +8,10 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
  * @package phplibphone
  */
-namespace itbz\phplibphone;
 
+namespace itbz\phplibphone;
 
 /**
  * Empty library null object
@@ -21,7 +20,6 @@ namespace itbz\phplibphone;
  */
 class EmptyLibrary implements LookupInterface
 {
-
     /**
      * Null object lookup
      *
@@ -33,5 +31,4 @@ class EmptyLibrary implements LookupInterface
     {
         return '';
     }
-
 }

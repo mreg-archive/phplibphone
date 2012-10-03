@@ -8,30 +8,24 @@
  * file that was distributed with this source code.
  *
  * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- *
- * @package phplibphone
- *
- * @subpackage Library
+ * @package phplibphone\Library
  */
-namespace itbz\phplibphone\Library;
 
+namespace itbz\phplibphone\Library;
 
 /**
  * Maps swedish area codes to area names in swedish
  *
- * @package phplibphone
- *
- * @subpackage Library
+ * @package phplibphone\Library
  */
 class AreasSeSv implements \itbz\phplibphone\AreaLookupInterface
 {
-
     /**
      * The area code map
      *
      * @var array
      */
-    static private $_codes = array(
+    private static $codes = array(
         10 => 'Lokalt direktval företagsväxlar',
         11 => 'Norrköping',
         120 => 'Åtvidaberg',
@@ -311,9 +305,8 @@ class AreasSeSv implements \itbz\phplibphone\AreaLookupInterface
         978 => 'Pajala',
         980 => 'Kiruna',
         981 => 'Vittangi',
-        99 => 'Massanrop'      
+        99 => 'Massanrop'
     );
-
 
     /**
      * Get country code this library handles
@@ -325,7 +318,6 @@ class AreasSeSv implements \itbz\phplibphone\AreaLookupInterface
         return 46;
     }
 
-
     /**
      * Lookup area code
      *
@@ -335,12 +327,11 @@ class AreasSeSv implements \itbz\phplibphone\AreaLookupInterface
      */
     public function lookup($nr)
     {
-        if (isset(self::$_codes[$nr])) {
-            
-            return self::$_codes[$nr];
+        if (isset(self::$codes[$nr])) {
+
+            return self::$codes[$nr];
         }
 
         return '';
     }
-
 }
