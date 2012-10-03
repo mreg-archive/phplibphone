@@ -2,3 +2,5 @@ build
 vendor
 composer.phar
 composer.lock
+phplibphone.sublime-project
+phplibphone.sublime-workspace
