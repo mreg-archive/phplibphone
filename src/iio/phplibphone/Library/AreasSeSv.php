@@ -11,14 +11,16 @@
  * @package phplibphone\Library
  */
 
-namespace itbz\phplibphone\Library;
+namespace iio\phplibphone\Library;
+
+use iio\phplibphone\AreaLookupInterface;
 
 /**
  * Maps swedish area codes to area names in swedish
  *
  * @package phplibphone\Library
  */
-class AreasSeSv implements \itbz\phplibphone\AreaLookupInterface
+class AreasSeSv implements AreaLookupInterface
 {
     /**
      * The area code map

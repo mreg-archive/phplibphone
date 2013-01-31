@@ -1,8 +1,8 @@
 <?php
-namespace itbz\phplibphone;
+namespace iio\phplibphone;
 
-use itbz\phplibphone\Library\Countries;
-use itbz\phpcountry\Country as PhpCountry;
+use iio\phplibphone\Library\Countries;
+use iio\phpcountry\Country as PhpCountry;
 
 class CountriesTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +20,7 @@ class CountriesTest extends \PHPUnit_Framework_TestCase
     public function testTranslateException()
     {
         $phpCountry = $this->getMock(
-            '\itbz\phpcountry\Country',
+            '\iio\phpcountry\Country',
             array('translate')
         );
 
@@ -28,7 +28,7 @@ class CountriesTest extends \PHPUnit_Framework_TestCase
             ->method('translate')
             ->will(
                 $this->throwException(
-                    new \itbz\phpcountry\TranslationException
+                    new \iio\phpcountry\TranslationException
                 )
             );
 

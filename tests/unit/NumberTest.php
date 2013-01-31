@@ -1,9 +1,9 @@
 <?php
-namespace itbz\phplibphone;
+namespace iio\phplibphone;
 
-use itbz\phplibphone\Library\Countries;
-use itbz\phplibphone\Library\AreasSeSv;
-use itbz\phpcountry\Country as PhpCountry;
+use iio\phplibphone\Library\Countries;
+use iio\phplibphone\Library\AreasSeSv;
+use iio\phpcountry\Country as PhpCountry;
 
 class NumberTest extends \PHPUnit_Framework_TestCase
 {
@@ -103,7 +103,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
     public function testGetCountry()
     {
         $countryLib = $this->getMock(
-            '\itbz\phplibphone\EmptyLibrary',
+            '\iio\phplibphone\EmptyLibrary',
             array('lookup')
         );
 
@@ -123,7 +123,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $number = new Number(new EmptyLibrary());
 
         $carrierLib = $this->getMock(
-            '\itbz\phplibphone\EmptyCarrierLibrary',
+            '\iio\phplibphone\EmptyCarrierLibrary',
             array('getCountryCode', 'lookup')
         );
 
@@ -152,7 +152,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
         $number = new Number(new EmptyLibrary());
 
         $areaLib = $this->getMock(
-            '\itbz\phplibphone\AreaLookupInterface',
+            '\iio\phplibphone\AreaLookupInterface',
             array('getCountryCode', 'lookup')
         );
 

@@ -11,17 +11,18 @@
  * @package phplibphone\Library
  */
 
-namespace itbz\phplibphone\Library;
+namespace iio\phplibphone\Library;
 
-use itbz\phpcountry\Country;
-use itbz\phpcountry\TranslationException;
+use iio\phpcountry\Country;
+use iio\phpcountry\TranslationException;
+use iio\phplibphone\LookupInterface;
 
 /**
  * Map country codes to country names
  *
  * @package phplibphone\Library
  */
-class Countries implements \itbz\phplibphone\LookupInterface
+class Countries implements LookupInterface
 {
     /**
      * The country code map

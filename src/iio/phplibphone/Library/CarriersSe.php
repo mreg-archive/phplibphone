@@ -11,17 +11,18 @@
  * @package phplibphone\Library
  */
 
-namespace itbz\phplibphone\Library;
+namespace iio\phplibphone\Library;
 
-use itbz\phplibphone\Exception;
+use iio\phplibphone\Exception;
 use SimpleXMLElement;
+use iio\phplibphone\CarrierLookupInterface;
 
 /**
  * Fetch carrier information for swedish phone numbers from api.pts.se
  *
  * @package phplibphone\Library
  */
-class CarriersSe implements \itbz\phplibphone\CarrierLookupInterface
+class CarriersSe implements CarrierLookupInterface
 {
     /**
      * Get country code this library handles

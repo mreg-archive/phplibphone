@@ -11,7 +11,7 @@
  * @package phplibphone
  */
 
-namespace itbz\phplibphone;
+namespace iio\phplibphone;
 
 /**
  * Empty carrier library null object

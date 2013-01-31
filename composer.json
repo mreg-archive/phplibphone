@@ -1,8 +1,8 @@
 {
-    "name": "itbz/phplibphone",
+    "name": "iio/phplibphone",
     "description": "Parse phone numbers",
     "keywords": ["phone", "E.164"],
-    "homepage": "https://github.com/itbz/phplibphone",
+    "homepage": "https://github.com/iio/phplibphone",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -13,11 +13,12 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "itbz/phpcountry": ">=0.2.0"
+        "iio/phpcountry": ">=0.3.0"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
-            "itbz\\phplibphone": "src/"
+            "iio\\phplibphone": "src/"
         }
     }
 }

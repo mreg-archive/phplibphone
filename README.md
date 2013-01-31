@@ -10,9 +10,9 @@ default country code used when parsing numbers with no explicit country code.
 To create a parser with country names i english and 46 as the default country
 code use:
 
-    use itbz\phplibphone\Number;
-    use itbz\phplibphone\Library\Countries;
-    use itbz\phpcountry\Country as PhpCountry;
+    use iio\phplibphone\Number;
+    use iio\phplibphone\Library\Countries;
+    use iio\phpcountry\Country as PhpCountry;
 
     $phpCountry = new PhpCountry;
     $phpCountry->setLang('en');
@@ -22,7 +22,7 @@ code use:
 Register area code libraries to enable phplibphone to correctly identify area
 codes.
 
-    use itbz\phplibphone\Library\AreasSeSv;
+    use iio\phplibphone\Library\AreasSeSv;
     $parser->setAreaLib(new AreasSeSv);
 
 Parse numbers with the `setRaw()` method. Spaces and unknown characters are
@@ -67,9 +67,3 @@ Retrieve parsed information
     
     echo $parser->getArea();
     // Stockholm
-
-
-The complete documentation
---------------------------
-
-http://itbz.github.com/packages/phplibphone.html
