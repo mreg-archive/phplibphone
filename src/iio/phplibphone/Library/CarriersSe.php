@@ -6,9 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- * @package phplibphone\Library
  */
 
 namespace iio\phplibphone\Library;
@@ -20,7 +17,8 @@ use iio\phplibphone\CarrierLookupInterface;
 /**
  * Fetch carrier information for swedish phone numbers from api.pts.se
  *
- * @package phplibphone\Library
+ * @author  Hannes Forsgård <hannes.forsgard@gmail.com>
+ * @package phplibphone
  */
 class CarriersSe implements CarrierLookupInterface
 {
@@ -37,11 +35,9 @@ class CarriersSe implements CarrierLookupInterface
     /**
      * Fetch carrier information from api.pts.se
      *
-     * @param string $ndc National destination code
-     * @param string $sn Subscriber number
-     *
-     * @return string Carrier description
-     *
+     * @param  string    $ndc National destination code
+     * @param  string    $sn Subscriber number
+     * @return string    Carrier description
      * @throws Exception if unable to reach api.pts.se, or XML is broken
      */
     public function lookup($ndc, $sn)

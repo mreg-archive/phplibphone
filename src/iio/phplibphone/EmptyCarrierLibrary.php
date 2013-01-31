@@ -6,9 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- * @package phplibphone
  */
 
 namespace iio\phplibphone;
@@ -16,6 +13,7 @@ namespace iio\phplibphone;
 /**
  * Empty carrier library null object
  *
+ * @author  Hannes Forsgård <hannes.forsgard@gmail.com>
  * @package phplibphone
  */
 class EmptyCarrierLibrary implements CarrierLookupInterface
@@ -23,9 +21,8 @@ class EmptyCarrierLibrary implements CarrierLookupInterface
     /**
      * Empty carrier library null object
      *
-     * @param string $ndc National destination number
-     * @param string $sn Subscriber number
-     *
+     * @param  string $ndc National destination number
+     * @param  string $sn  Subscriber number
      * @return string Always returns the empty string
      */
     public function lookup($ndc, $sn)

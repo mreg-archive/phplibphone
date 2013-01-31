@@ -6,9 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- * @package phplibphone\Library
  */
 
 namespace iio\phplibphone\Library;
@@ -18,14 +15,13 @@ use iio\phplibphone\AreaLookupInterface;
 /**
  * Maps swedish area codes to area names in swedish
  *
- * @package phplibphone\Library
+ * @author  Hannes Forsgård <hannes.forsgard@gmail.com>
+ * @package phplibphone
  */
 class AreasSeSv implements AreaLookupInterface
 {
     /**
-     * The area code map
-     *
-     * @var array
+     * @var array The area code map
      */
     private static $codes = array(
         10 => 'Lokalt direktval företagsväxlar',
@@ -323,8 +319,7 @@ class AreasSeSv implements AreaLookupInterface
     /**
      * Lookup area code
      *
-     * @param string $nr
-     *
+     * @param  string $nr
      * @return string Data found, empty string if nothing was found
      */
     public function lookup($nr)

@@ -6,9 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- * @package phplibphone
  */
 
 namespace iio\phplibphone;
@@ -16,6 +13,7 @@ namespace iio\phplibphone;
 /**
  * Parse phone numbers
  *
+ * @author  Hannes Forsgård <hannes.forsgard@gmail.com>
  * @package phplibphone
  */
 class Number
@@ -46,68 +44,51 @@ class Number
     const STATE_SN = 0;
 
     /**
-     * Country code lookup library
-     *
-     * @var LookupInterface
+     * @var LookupInterface Country code lookup library
      */
     private $countryLib;
 
     /**
-     * Array of area code lookup libraries
-     *
-     * @var array
+     * @var array Array of area code lookup libraries
      */
     private $areaLibs = array();
 
     /**
-     * Array of carrier lookup libraries
-     *
-     * @var array
+     * @var array Array of carrier lookup libraries
      */
     private $carrierLibs = array();
 
     /**
-     * Default country code
-     *
-     * @var string
+     * @var string Default country code
      */
     private $defaultCc;
 
     /**
-     * Raw number input
-     *
-     * @var string
+     * @var string Raw number input
      */
     private $raw = '';
 
     /**
-     * Country code
-     *
-     * @var string
+     * @var string Country code
      */
     private $cc = '';
 
     /**
-     * National destination code
-     *
-     * @var string
+     * @var string National destination code
      */
     private $ndc = '';
 
     /**
-     * Subscriber number
-     *
-     * @var string
+     * @var string Subscriber number
      */
     private $sn = '';
 
     /**
-     * Country code lookup library is required
+     * Counstructor
      *
      * @param LookupInterface $countryLib
-     *
-     * @param string $defaultCc Country code to assume when parsing numbers with
-     * no explicit country code
+     * @param string          $defaultCc Country code to assume when parsing
+     * numbers with no explicit country code
      */
     public function __construct(LookupInterface $countryLib, $defaultCc = '')
     {
@@ -118,8 +99,7 @@ class Number
     /**
      * Register area code lookup library
      *
-     * @param AreaLookupInterface $areaLib
-     *
+     * @param  AreaLookupInterface $areaLib
      * @return void
      */
     public function setAreaLib(AreaLookupInterface $areaLib)
@@ -131,8 +111,7 @@ class Number
     /**
      * Get area code lookup library for country code
      *
-     * @param string/int $countryCode
-     *
+     * @param  string/int      $countryCode
      * @return LookupInterface
      */
     public function getAreaLib($countryCode)
@@ -148,8 +127,7 @@ class Number
     /**
      * Register carrier code lookup library
      *
-     * @param CarrierLookupInterface $carrier
-     *
+     * @param  CarrierLookupInterface $carrier
      * @return void
      */
     public function setCarrierLib(CarrierLookupInterface $carrier)
@@ -161,8 +139,7 @@ class Number
     /**
      * Get carrier lookup library for country code
      *
-     * @param string/int $countryCode
-     *
+     * @param  string/int             $countryCode
      * @return CarrierLookupInterface
      */
     public function getCarrierLib($countryCode)
@@ -193,8 +170,7 @@ class Number
      *
      * Non numerical characters (apart from prefixes) are silently ignored
      *
-     * @param string $nr
-     *
+     * @param  string $nr
      * @return void
      */
     public function setRaw($nr)
@@ -279,8 +255,7 @@ class Number
     /**
      * Set country code
      *
-     * @param string $cc
-     *
+     * @param  string $cc
      * @return void
      */
     public function setCountryCode($cc)
@@ -292,8 +267,7 @@ class Number
     /**
      * Set national destination code
      *
-     * @param string $ndc
-     *
+     * @param  string $ndc
      * @return void
      */
     public function setNationalDestinationCode($ndc)
@@ -305,8 +279,7 @@ class Number
     /**
      * Set subscriber number
      *
-     * @param string $sn
-     *
+     * @param  string $sn
      * @return void
      */
     public function setSubscriberNumber($sn)
@@ -479,8 +452,7 @@ class Number
     /**
      * Generic group number
      *
-     * @param string $nr
-     *
+     * @param  string $nr
      * @return string
      */
     public static function group($nr)

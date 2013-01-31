@@ -6,9 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- * @package phplibphone
  */
 
 namespace iio\phplibphone;
@@ -16,6 +13,7 @@ namespace iio\phplibphone;
 /**
  * Base exception for phplibphone
  *
+ * @author  Hannes Forsgård <hannes.forsgard@gmail.com>
  * @package phplibphone
  */
 class Exception extends \Exception

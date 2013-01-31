@@ -6,9 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- * @package phplibphone\Library
  */
 
 namespace iio\phplibphone\Library;
@@ -20,14 +17,13 @@ use iio\phplibphone\LookupInterface;
 /**
  * Map country codes to country names
  *
- * @package phplibphone\Library
+ * @author  Hannes Forsgård <hannes.forsgard@gmail.com>
+ * @package phplibphone
  */
 class Countries implements LookupInterface
 {
     /**
-     * The country code map
-     *
-     * @var array
+     * @var array The country code map
      */
     private static $countries = array(
         1 => 'US',
@@ -259,14 +255,12 @@ class Countries implements LookupInterface
     );
 
     /**
-     * ISO 3166-1 country code translator
-     *
-     * @var Country
+     * @var Country ISO 3166-1 country code translator
      */
     private $countryCodes;
 
     /**
-     * Map country codes to country names
+     * Constructor
      *
      * @param Country $countryCodeTranslator Remember that language should be
      * set to Country before injection.
@@ -279,8 +273,7 @@ class Countries implements LookupInterface
     /**
      * Lookup country code
      *
-     * @param string $nr
-     *
+     * @param  string $nr
      * @return string Data found, empty string if nothing was found
      */
     public function lookup($nr)

@@ -6,9 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- * @package phplibphone
  */
 
 namespace iio\phplibphone;
@@ -16,6 +13,7 @@ namespace iio\phplibphone;
 /**
  * Standard interface for lookup data collections
  *
+ * @author  Hannes Forsgård <hannes.forsgard@gmail.com>
  * @package phplibphone
  */
 interface LookupInterface
@@ -23,8 +21,7 @@ interface LookupInterface
     /**
      * Lookup number
      *
-     * @param string $nr
-     *
+     * @param  string $nr
      * @return string Data found, empty string if nothing was found
      */
     public function lookup($nr);

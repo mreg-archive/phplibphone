@@ -6,9 +6,6 @@
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @author Hannes Forsgård <hannes.forsgard@gmail.com>
- * @package phplibphone
  */
 
 namespace iio\phplibphone;
@@ -16,6 +13,7 @@ namespace iio\phplibphone;
 /**
  * Interface for looking up carrier information
  *
+ * @author  Hannes Forsgård <hannes.forsgard@gmail.com>
  * @package phplibphone
  */
 interface CarrierLookupInterface
@@ -30,9 +28,8 @@ interface CarrierLookupInterface
     /**
      * Lookup number
      *
-     * @param string $ndc National destination code
-     * @param string $sn Subscriber number
-     *
+     * @param  string $ndc National destination code
+     * @param  string $sn  Subscriber number
      * @return string Data found, empty string if nothing was found
      */
     public function lookup($ndc, $sn);
