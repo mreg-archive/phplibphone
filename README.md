@@ -14,7 +14,7 @@ code use:
     use iio\phplibphone\Library\Countries;
     use iio\localefacade\LocaleFacade;
 
-    $parser = new Number(new LocaleFacade('en'), 46);
+    $parser = new Number(new Countries(new LocaleFacade('en')), 46);
 
 Register area code libraries to enable phplibphone to correctly identify area
 codes.
