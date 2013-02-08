@@ -12,12 +12,9 @@ code use:
 
     use iio\phplibphone\Number;
     use iio\phplibphone\Library\Countries;
-    use iio\phpcountry\Country as PhpCountry;
+    use iio\localefacade\LocaleFacade;
 
-    $phpCountry = new PhpCountry;
-    $phpCountry->setLang('en');
-
-    $parser = new Number($phpCountry, 46);
+    $parser = new Number(new LocaleFacade('en'), 46);
 
 Register area code libraries to enable phplibphone to correctly identify area
 codes.
