@@ -3,7 +3,7 @@ namespace iio\phplibphone;
 
 use iio\phplibphone\Library\Countries;
 use iio\phplibphone\Library\AreasSeSv;
-use iio\phpcountry\Country as PhpCountry;
+use iio\localefacade\LocaleFacade;
 
 class NumberTest extends \PHPUnit_Framework_TestCase
 {
@@ -178,10 +178,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     public function testSetRaw()
     {
-        $phpCountry = new PhpCountry;
-        $phpCountry->setLang('en');
-
-        $number = new Number(new Countries($phpCountry), 46);
+        $number = new Number(new Countries(new LocaleFacade('en')), 46);
         $number->setAreaLib(new AreasSeSv());
 
         $number->setRaw('+9987740212');
@@ -215,9 +212,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     public function testGetCountryCode()
     {
-        $phpCountry = new PhpCountry;
-        $phpCountry->setLang('en');
-        $number = new Number(new Countries($phpCountry));
+        $number = new Number(new Countries(new LocaleFacade('en')));
 
         $number->setRaw('+4687740212');
         $this->assertEquals('46', $number->getCountryCode());
@@ -225,9 +220,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     public function testGetNationalDestinationCode()
     {
-        $phpCountry = new PhpCountry;
-        $phpCountry->setLang('en');
-        $number = new Number(new Countries($phpCountry));
+        $number = new Number(new Countries(new LocaleFacade('en')));
 
         $number->setAreaLib(new AreasSeSv());
         $number->setRaw('+4687740212');
@@ -236,9 +229,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSubscriberNumber()
     {
-        $phpCountry = new PhpCountry;
-        $phpCountry->setLang('sv');
-        $number = new Number(new Countries($phpCountry));
+        $number = new Number(new Countries(new LocaleFacade('en')));
         $number->setAreaLib(new AreasSeSv());
         $number->setRaw('+4687740212');
         $this->assertEquals('7740212', $number->getSubscriberNumber());

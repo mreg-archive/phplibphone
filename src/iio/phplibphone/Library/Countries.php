@@ -10,8 +10,7 @@
 
 namespace iio\phplibphone\Library;
 
-use iio\phpcountry\Country;
-use iio\phpcountry\TranslationException;
+use iio\localefacade\LocaleFacade;
 use iio\phplibphone\LookupInterface;
 
 /**
@@ -255,19 +254,18 @@ class Countries implements LookupInterface
     );
 
     /**
-     * @var Country ISO 3166-1 country code translator
+     * @var array ISO 3166-1 country code translator
      */
-    private $countryCodes;
+    private $displayCountries;
 
     /**
      * Constructor
      *
-     * @param Country $countryCodeTranslator Remember that language should be
-     * set to Country before injection.
+     * @param LocaleFacade $localeFacade The locale used when translation country names
      */
-    public function __construct(Country $countryCodeTranslator)
+    public function __construct(LocaleFacade $localeFacade)
     {
-        $this->countryCodes = $countryCodeTranslator;
+        $this->displayCountries = $localeFacade->getDisplayCountries();
     }
 
     /**
@@ -279,13 +277,9 @@ class Countries implements LookupInterface
     public function lookup($nr)
     {
         if (isset(self::$countries[$nr])) {
-            try {
+            $code = self::$countries[$nr];
 
-                return $this->countryCodes->translate(self::$countries[$nr]);
-            } catch (TranslationException $e) {
-
-                return '';
-            }
+            return isset($this->displayCountries[$code]) ? $this->displayCountries[$code] : '';
         }
 
         return '';
