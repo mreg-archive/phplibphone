@@ -186,7 +186,7 @@ class Number
         }
 
         // Set parsing state
-        switch ( $nr[0] ) {
+        switch ($nr[0]) {
             case self::CC_PREFIX:
                 $state = self::STATE_CC;
                 $step = 1;
@@ -459,7 +459,7 @@ class Number
     {
         assert('is_string($nr)');
         $nr = preg_replace("/[\n \t]/", '', $nr);
-        switch ( strlen($nr) ) {
+        switch (strlen($nr)) {
             case 1:
             case 2:
             case 3:
